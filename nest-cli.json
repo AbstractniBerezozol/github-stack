@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/github-stack/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/github-stack/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/github-stack",
+  "projects": {
+    "github-stack": {
+      "type": "application",
+      "root": "apps/github-stack",
+      "entryFile": "main",
+      "sourceRoot": "apps/github-stack/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/github-stack/tsconfig.app.json"
+      }
+    },
+    "email": {
+      "type": "application",
+      "root": "apps/email",
+      "entryFile": "main",
+      "sourceRoot": "apps/email/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/email/tsconfig.app.json"
+      }
+    },
+    "email-app": {
+      "type": "application",
+      "root": "apps/email-app",
+      "entryFile": "main",
+      "sourceRoot": "apps/email-app/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/email-app/tsconfig.app.json"
+      }
+    }
+  }
+}
