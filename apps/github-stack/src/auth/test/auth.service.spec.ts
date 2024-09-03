@@ -80,7 +80,7 @@ describe('AuthService', () => {
         username: 'Coco',
         password: 'Coco123',
         email: 'Coco@gmail.com',
-        roles: [],
+        role: [],
       }
       const expectedUser = { ...createUserDto, id: 2 }
       mockUserService.create.mockResolvedValue(expectedUser)

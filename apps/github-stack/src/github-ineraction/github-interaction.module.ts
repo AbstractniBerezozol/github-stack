@@ -24,6 +24,6 @@ import { SendingEmailService } from './service/sending-email.service'
     HttpModule,
   ],
   controllers: [GithubInteractionController],
-  providers: [GithubIneractionService, GitHubScheduler, SendingEmailService],
+  providers: [GithubIneractionService, GitHubScheduler, SendingEmailService, ],
 })
 export class GithubInteractionModule {}

@@ -62,12 +62,12 @@ export class UsersService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const username = createUserDto.username;
     const email = createUserDto.email;
-    const roles = createUserDto.roles;
+    const role = createUserDto.role;
     const newUser = this.userRepository.create({
       username,
       email,
       password: hashedPassword,
-      roles: roles || [UserRole.USER],
+      role: role || [UserRole.USER],
     });
     return this.userRepository.save(newUser);
   }

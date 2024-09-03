@@ -51,11 +51,6 @@ export class GithubInteractionController {
     return this.sendingEmailService.sendMonthSummary()
   }
 
-  @Post('send-data-to-another-api')
-  async sendToAnotherApiData() {
-    return this.sendingEmailService.checkForUpdates()
-  }
-
   @Post('add-repository/:repoId')
   async addRepositoryToWatchlist(
     @Param('repoId') repoId: number,
