@@ -1,18 +1,151 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { SendingEmailService } from '../service/sending-email.service'
+import { Test, TestingModule } from "@nestjs/testing";
+import { SendingEmailService } from "../service/sending-email.service";
+import { User } from "../../users/domain/entity/user.entity";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { HttpService } from "@nestjs/axios";
+import { Repository } from "typeorm";
+import { UserRole } from "../../users/domain/enum/roles.enum";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { EmailData } from "../domain/interface/email.interface";
+import { of } from "rxjs";
+import { AxiosResponse } from "axios";
 
-describe('SendingEmailService', () => {
-  let service: SendingEmailService
+const mockHttpService = {
+  get: jest.fn(),
+  post: jest.fn(),
+};
+
+const mockUserRepository = {
+  find: jest.fn(),
+};
+
+describe("SendingEmailService", () => {
+  let httpService: HttpService;
+  let sendingEmailService: SendingEmailService;
+  let userRepostory: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SendingEmailService],
-    }).compile()
+      providers: [
+        SendingEmailService,
+        { provide: HttpService, useValue: mockHttpService },
+        { provide: getRepositoryToken(User), useValue: mockUserRepository },
+      ],
+    }).compile();
 
-    service = module.get<SendingEmailService>(SendingEmailService)
-  })
+    sendingEmailService = module.get<SendingEmailService>(SendingEmailService);
+    httpService = module.get<HttpService>(HttpService);
+    userRepostory = module.get<Repository<User>>(getRepositoryToken(User));
+  });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined()
-  })
-})
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should be defined", () => {
+    expect(sendingEmailService).toBeDefined();
+  });
+  describe("sendingEmail", () => {
+    it("should send an email; and return some response", async () => {
+      const emailData: EmailData = {
+        from: "aleksandr.zolotarev@abstract.rs",
+        to: "user.email",
+        subject: "subject",
+        text: "text",
+      };
+
+      const mockResponse = {
+        data: "Email sent succesfully",
+      };
+
+      mockHttpService.get.mockReturnValue(of(mockResponse));
+
+      const result = await sendingEmailService.sendingEmail(emailData);
+
+      expect(httpService.post).toHaveBeenCalledWith(
+        "http://localhost:3001/sendingTestingEmail/messageRequest",
+        emailData
+      );
+      expect(result).toBe("Email sent succesfully");
+    });
+  });
+  describe("sendMonthSummary", () => {
+    it.only("should send monthly summary to users", async () => {
+      const mockedRepository: GitRepository = {
+        id: 1,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        latestRelease: "v1.7.19",
+        repoId: 23,
+        user: new User(),
+      };
+      const mockResponse: AxiosResponse = {
+        data: "OK",
+        status: 0,
+        statusText: "",
+        headers: undefined,
+        config: undefined,
+      };
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        roles: UserRole.USER,
+        repositories: [mockedRepository],
+      } as unknown as User;
+
+      const spySendingEmail = jest.spyOn(sendingEmailService, "sendingEmail");
+
+      jest.spyOn(httpService, "post").mockReturnValue(of(mockResponse));
+      jest.spyOn(userRepostory, "find").mockResolvedValue([mockUser]);
+
+      await sendingEmailService.sendMonthSummary();
+
+      expect(userRepostory.find).toHaveBeenCalledWith({
+        relations: ["repositories"],
+      });
+      expect(spySendingEmail).toHaveBeenCalled();
+      expect(spySendingEmail).toHaveBeenCalledWith({
+        from: "aleksandr.zolotarev@abstract.rs",
+        to: mockUser.email,
+        subject: "Here is your month summary",
+        text: `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`,
+      });
+    });
+
+    it("should handle errors during summary sending", async () => {
+      mockUserRepository.find.mockRejectedValue(new Error("Database error"));
+
+      await expect(sendingEmailService.sendMonthSummary()).rejects.toThrowError(
+        Error
+      );
+    });
+  });
+
+  describe("sendNewPassword", () => {
+    it("should send a new password email", async () => {
+      const email = "abracadabra@mail.com";
+      const password = "qwerty123";
+
+      const sendEmailSpy = jest
+        .spyOn(sendingEmailService, "sendingEmail")
+        .mockResolvedValue("Email sent succesfully");
+
+      await sendingEmailService.sendNewPassword(email, password);
+
+      expect(sendEmailSpy).toHaveBeenCalledWith({
+        from: "aleksandr.zolotarev@abstract.rs",
+        to: email,
+        subject: "New Password",
+        text: `Greetings! Here is your new password: ${password}`,
+      });
+    });
+  });
+});

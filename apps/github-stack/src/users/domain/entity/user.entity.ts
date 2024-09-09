@@ -25,7 +25,7 @@ export class User {
   @Column()
   email: string;
   @Column({ type: "enum", enum: UserRole, default: UserRole.USER })
-  role: string[];
+  role: UserRole;
   @OneToMany(() => GitRepository, (repository) => repository.user, {
     cascade: true,
   })

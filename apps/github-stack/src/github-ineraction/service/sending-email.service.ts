@@ -1,20 +1,17 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
 import { EmailData } from "../domain/interface/email.interface";
-import { firstValueFrom, lastValueFrom } from "rxjs";
-import { GitRepository } from "../domain/entity/repository.entity";
-import { ConfigService } from "@nestjs/config";
+import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 
 @Injectable()
 export class SendingEmailService {
-  private readonly githubApiUrl = "https://api.github.com";
   constructor(
     private readonly httpService: HttpService,
     @InjectRepository(User)
-    private readonly userRep: Repository<User>,
+    private readonly userRep: Repository<User>
   ) {}
 
   async sendingEmail(data: EmailData): Promise<string> {
@@ -27,7 +24,7 @@ export class SendingEmailService {
     const users = await this.userRep.find({ relations: ["repositories"] });
     for (const user of users) {
       const summary = user.repositories
-        .map((repo) => `- ${repo.name} `)
+        .map((repo) => `- ${repo.name}`)
         .join("\n");
       const subject = "Here is your month summary";
       const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;

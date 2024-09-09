@@ -38,18 +38,20 @@ export class GithubInteractionController {
 
   @UseGuards(RolesGuard)
   @Get('watchlist')
-  @Roles([UserRole.ADMIN])
+  @Roles(UserRole.ADMIN)
   async getWatchlist(@Request() req): Promise<GitRepository[]> {
     return this.githubService.getWatchlist(req.user)
   }
 
   @UseGuards(RolesGuard)
   @Get('send-test-email')
-  @Roles([UserRole.ADMIN, UserRole.MODERATOR])
+  @Roles(UserRole.ADMIN, UserRole.MODERATOR)
   async sendEmail(@Query('email') email: string) {
     email = 'aleksandr.zolotarev@abstract.rs'
     return this.sendingEmailService.sendMonthSummary()
   }
+
+  
 
   @Post('add-repository/:repoId')
   async addRepositoryToWatchlist(

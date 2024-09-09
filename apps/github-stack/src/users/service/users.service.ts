@@ -2,20 +2,20 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../domain/entity/user.entity';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
-import { CreateUserDto } from '../domain/dto/create-user.dto';
-import { UpdateUserDto } from '../domain/dto/update-user.dto';
-import { UserRole } from '../domain/enum/roles.enum';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "../domain/entity/user.entity";
+import { Repository } from "typeorm";
+import * as bcrypt from "bcryptjs";
+import { CreateUserDto } from "../domain/dto/create-user.dto";
+import { UpdateUserDto } from "../domain/dto/update-user.dto";
+import { UserRole } from "../domain/enum/roles.enum";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>
   ) {}
 
   async findAll() {
@@ -30,7 +30,7 @@ export class UsersService {
 
   async findOne(username: string) {
     if (!username) {
-      throw new Error('Username is null');
+      throw new Error("Username is null");
     }
 
     const user = await this.userRepository.findOne({
@@ -67,19 +67,19 @@ export class UsersService {
       username,
       email,
       password: hashedPassword,
-      role: role || [UserRole.USER],
+      role: role || UserRole.USER,
     });
     return this.userRepository.save(newUser);
   }
   async update(updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.find();
+    const user = await this.userRepository.find({}); //rewrite with username searching
+    if (!user) {
+      throw new NotFoundException(`User not found`);
+    }
     const updatedUser = {
       ...user,
       ...updateUserDto,
     };
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
     await this.userRepository.save(updatedUser);
     return updatedUser;
   }
