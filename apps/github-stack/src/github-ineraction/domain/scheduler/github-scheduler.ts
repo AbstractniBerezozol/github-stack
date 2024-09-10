@@ -32,7 +32,6 @@ export class GitHubScheduler {
   async handleMonthSummary() {
     const users = await this.userRep.find({ relations: ["repositories"] });
     for (const user of users) {
-
       await this.sendingEmailService.sendMonthSummary(user);
     }
   }
@@ -68,18 +67,20 @@ export class GitHubScheduler {
       if (repo.latestRelease != release) {
         repo.latestRelease = release;
         this.gitRepository.save(repo);
-        const subject = "Here is update from your list!";
-        const text = `Hello, it is update ${repo.name} from your Watchlist!!!`;
-        const letter = {
-          from: "aleksandr.zolotarev@abstract.rs",
-          to: repo.user.email,
-          subject: subject,
-          text: text,
-        };
-
-        await this.sendingEmailService.sendingEmail(letter);
+        await this.sendingNotification(repo);
       }
     }
   }
-  async sendingNotification() {}
+  async sendingNotification(repo: GitRepository) {
+    const subject = "Here is update from your list!";
+    const text = `Hello, it is update ${repo.name} from your Watchlist!!!`;
+    const letter = {
+      from: "aleksandr.zolotarev@abstract.rs",
+      to: repo.user.email,
+      subject: subject,
+      text: text,
+    };
+
+    await this.sendingEmailService.sendingEmail(letter);
+  }
 }

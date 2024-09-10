@@ -1,43 +1,51 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
-import { AuthPayloadDto } from '../domain/dto/auth.dto'
-import { AuthService } from '../service/auth.service'
-import { JwtAuthGuard } from '../guards/jwt.guard'
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger'
-import { CreateUserDto } from '../../users/domain/dto/create-user.dto'
-import { LocalStrategy } from '../strategies/local.srategy'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
+import { AuthPayloadDto } from "../domain/dto/auth.dto";
+import { AuthService } from "../service/auth.service";
+import { JwtAuthGuard } from "../guards/jwt.guard";
+import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
+import { CreateUserDto } from "../../users/domain/dto/create-user.dto";
+import { LocalStrategy } from "../strategies/local.strategy";
+import { LocalAuthGuard } from "../guards/local-auth.guard";
 
-@ApiTags('auth')
+@ApiTags("auth")
 @ApiBearerAuth()
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
-// @UseGuards(LocalStrategy)
-  @Post('login')
+  @UseGuards(LocalAuthGuard)
+  @Post("login")
   @ApiBody({ type: AuthPayloadDto })
   async login(@Body() data: AuthPayloadDto) {
-    return this.authService.login(data)
+    return this.authService.login(data);
   }
 
-  @Post('register')
+  @Post("register")
   @ApiBody({ type: CreateUserDto })
   async register(@Body() data: CreateUserDto) {
-    return this.authService.register(data)
+    return this.authService.register(data);
   }
 
-  @Get('profile')
+  @Get("profile")
   @UseGuards(JwtAuthGuard)
   getProfile(@Request() req) {
-    const far = 'Hello'
-    return req.user
+    const far = "Hello";
+    return req.user;
   }
 
-  @Post('refresh-token')
-  async refreshToken(@Body('refreshToken') refreshToken: string) {
-    return this.authService.refreshToken(refreshToken)
+  @Post("refresh-token")
+  async refreshToken(@Body("refreshToken") refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
   }
 
-  @Post('reset-password')
-  async resetPassword(@Body('username') data: string) {
-    return this.authService.resetPassword(data)
+  @Post("reset-password")
+  async resetPassword(@Body("username") data: string) {
+    return this.authService.resetPassword(data);
   }
 }
