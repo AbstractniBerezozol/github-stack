@@ -78,9 +78,8 @@ export class AuthService {
 
     const newPassword = this.generateRandomPassword();
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    
-    await this.userService.update(user);
+
+    await this.userService.update(user.username, hashedPassword);
 
     await this.sendingEmailService.sendNewPassword(user.email, newPassword);
   }
@@ -91,5 +90,14 @@ export class AuthService {
         length
       );
     return codeGeneration(12)();
+  }
+
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await this.userService.findOne(username);
+    if (user && user.password == password) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return user;
   }
 }

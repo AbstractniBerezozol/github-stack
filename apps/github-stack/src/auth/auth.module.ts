@@ -1,18 +1,19 @@
-import { Module } from '@nestjs/common'
-import { AuthController } from './controller/auth.controller'
-import { JwtModule } from '@nestjs/jwt'
-import { PassportModule } from '@nestjs/passport'
-import { JwtStrategy } from './strategies/jwt.strategy'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { User } from '../users/domain/entity/user.entity'
-import { UsersService } from '../users/service/users.service'
-import { AuthService } from './service/auth.service'
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy'
-import { SendingEmailService } from '../github-ineraction/service/sending-email.service'
-import { HttpModule } from '@nestjs/axios'
-import { GitRepository } from '../github-ineraction/domain/entity/repository.entity'
-import { UsersModule } from '../users/users.module'
+import { Module } from "@nestjs/common";
+import { AuthController } from "./controller/auth.controller";
+import { JwtModule } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
+import { JwtStrategy } from "./strategies/jwt.strategy";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { User } from "../users/domain/entity/user.entity";
+import { UsersService } from "../users/service/users.service";
+import { AuthService } from "./service/auth.service";
+import { JwtRefreshStrategy } from "./strategies/jwt-refresh.strategy";
+import { SendingEmailService } from "../github-ineraction/service/sending-email.service";
+import { HttpModule } from "@nestjs/axios";
+import { GitRepository } from "../github-ineraction/domain/entity/repository.entity";
+import { UsersModule } from "../users/users.module";
+import { LocalStrategy } from "./strategies/local.srategy";
 
 @Module({
   imports: [
@@ -20,8 +21,8 @@ import { UsersModule } from '../users/users.module'
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
+        secret: configService.get<string>("JWT_SECRET"),
+        signOptions: { expiresIn: "1h" },
       }),
       inject: [ConfigService],
     }),
@@ -36,6 +37,7 @@ import { UsersModule } from '../users/users.module'
     UsersService,
     JwtRefreshStrategy,
     SendingEmailService,
+    // LocalStrategy,
   ],
 })
 export class AuthModule {}

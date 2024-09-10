@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "../service/users.service";
@@ -38,8 +39,9 @@ export class UsersController {
   }
 
   @Patch(":username")
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    const username = req.user.username;
+    return this.usersService.update(username, updateUserDto);
   }
 
   @Roles(UserRole.ADMIN)

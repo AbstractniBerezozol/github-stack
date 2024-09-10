@@ -5,6 +5,7 @@ import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
+import { GitHubScheduler } from "../domain/scheduler/github-scheduler";
 
 @Injectable()
 export class SendingEmailService {
@@ -20,22 +21,19 @@ export class SendingEmailService {
     return lastValueFrom(response).then((res) => res.data);
   }
 
-  async sendMonthSummary() {
-    const users = await this.userRep.find({ relations: ["repositories"] });
-    for (const user of users) {
-      const summary = user.repositories
-        .map((repo) => `- ${repo.name}`)
-        .join("\n");
-      const subject = "Here is your month summary";
-      const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;
-      const letter = {
-        from: "aleksandr.zolotarev@abstract.rs",
-        to: user.email,
-        subject: subject,
-        text: text,
-      };
-      await this.sendingEmail(letter);
-    }
+  async sendMonthSummary(user: User) {
+    const summary = user.repositories
+      .map((repo) => `- ${repo.name}`)
+      .join("\n");
+    const subject = "Here is your month summary";
+    const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;
+    const letter = {
+      from: "aleksandr.zolotarev@abstract.rs",
+      to: user.email,
+      subject: subject,
+      text: text,
+    };
+    await this.sendingEmail(letter);
   }
 
   async sendNewPassword(email: string, password: string) {

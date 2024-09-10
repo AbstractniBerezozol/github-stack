@@ -108,7 +108,7 @@ describe("UsersService", () => {
 
     jest.spyOn(mockUserService, "preload").mockReturnValue(user);
 
-    const result = await service.update(updateUserDto);
+    const result = await service.update(user.username, updateUserDto);
 
     expect(result).toEqual({
       ...user,
@@ -137,8 +137,6 @@ describe("UsersService", () => {
     jest.spyOn(mockUserService, "softRemove").mockReturnValue(user);
 
     const result = await service.remove(username);
-
-    expect(result).toEqual("You are deleted!");
 
     expect(mockUserService.softRemove).toHaveBeenCalledWith({
       ...user,

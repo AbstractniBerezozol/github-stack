@@ -227,5 +227,6 @@ describe("GithubScheduler", () => {
         expect(sendEmailSpy).not.toHaveBeenCalled();
       });
     });
+    
   });
 

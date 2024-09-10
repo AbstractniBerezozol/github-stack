@@ -4,7 +4,7 @@ import { SendingEmailService } from "../../service/sending-email.service";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, lastValueFrom } from "rxjs";
 import { Repository } from "typeorm";
 import { User } from "../../../users/domain/entity/user.entity";
 import { GitRepository } from "../entity/repository.entity";
@@ -21,7 +21,7 @@ export class GitHubScheduler {
     private readonly gitRepository: Repository<GitRepository>
   ) {}
 
-  private readonly githubApiUrl = "https://api.github.com"
+  private readonly githubApiUrl = "https://api.github.com";
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
@@ -30,7 +30,11 @@ export class GitHubScheduler {
 
   @Cron("0 0 1 * *")
   async handleMonthSummary() {
-    await this.sendingEmailService.sendMonthSummary();
+    const users = await this.userRep.find({ relations: ["repositories"] });
+    for (const user of users) {
+
+      await this.sendingEmailService.sendMonthSummary(user);
+    }
   }
 
   async getLatestReliase(gitRepository: GitRepository) {
@@ -77,4 +81,5 @@ export class GitHubScheduler {
       }
     }
   }
+  async sendingNotification() {}
 }

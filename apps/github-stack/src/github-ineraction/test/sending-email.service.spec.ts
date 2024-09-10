@@ -70,7 +70,7 @@ describe("SendingEmailService", () => {
     });
   });
   describe("sendMonthSummary", () => {
-    it.only("should send monthly summary to users", async () => {
+    it("should send monthly summary to users", async () => {
       const mockedRepository: GitRepository = {
         id: 1,
         name: "mockingRepository",
@@ -106,7 +106,7 @@ describe("SendingEmailService", () => {
       jest.spyOn(httpService, "post").mockReturnValue(of(mockResponse));
       jest.spyOn(userRepostory, "find").mockResolvedValue([mockUser]);
 
-      await sendingEmailService.sendMonthSummary();
+      await sendingEmailService.sendMonthSummary(mockUser);
 
       expect(userRepostory.find).toHaveBeenCalledWith({
         relations: ["repositories"],
@@ -121,11 +121,19 @@ describe("SendingEmailService", () => {
     });
 
     it("should handle errors during summary sending", async () => {
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        roles: UserRole.USER,
+        repositories: [],
+      } as unknown as User;
       mockUserRepository.find.mockRejectedValue(new Error("Database error"));
 
-      await expect(sendingEmailService.sendMonthSummary()).rejects.toThrowError(
-        Error
-      );
+      await expect(
+        sendingEmailService.sendMonthSummary(mockUser)
+      ).rejects.toThrowError(Error);
     });
   });
 

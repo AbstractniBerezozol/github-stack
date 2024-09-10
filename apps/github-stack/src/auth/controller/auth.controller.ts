@@ -4,13 +4,14 @@ import { AuthService } from '../service/auth.service'
 import { JwtAuthGuard } from '../guards/jwt.guard'
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger'
 import { CreateUserDto } from '../../users/domain/dto/create-user.dto'
+import { LocalStrategy } from '../strategies/local.srategy'
 
 @ApiTags('auth')
 @ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+// @UseGuards(LocalStrategy)
   @Post('login')
   @ApiBody({ type: AuthPayloadDto })
   async login(@Body() data: AuthPayloadDto) {
