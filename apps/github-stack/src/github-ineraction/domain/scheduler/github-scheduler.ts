@@ -23,19 +23,6 @@ export class GitHubScheduler {
 
   private readonly githubApiUrl = "https://api.github.com";
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
-  async handleCron() {
-    await this.checkForUpdates();
-  }
-
-  @Cron("0 0 1 * *")
-  async handleMonthSummary() {
-    const users = await this.userRep.find({ relations: ["repositories"] });
-    for (const user of users) {
-      await this.sendingEmailService.sendMonthSummary(user);
-    }
-  }
-
   async getLatestReliase(gitRepository: GitRepository) {
     const token = this.configService.get<string>("GITHUB_TOKEN");
 
@@ -82,5 +69,18 @@ export class GitHubScheduler {
     };
 
     await this.sendingEmailService.sendingEmail(letter);
+  }
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async handleCron() {
+    await this.checkForUpdates();
+  }
+
+  @Cron("0 0 1 * *")
+  async handleMonthSummary() {
+    const users = await this.userRep.find({ relations: ["repositories"] });
+    for (const user of users) {
+      await this.sendingEmailService.sendMonthSummary(user);
+    }
   }
 }

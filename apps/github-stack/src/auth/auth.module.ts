@@ -37,7 +37,7 @@ import { LocalStrategy } from "./strategies/local.strategy";
     UsersService,
     JwtRefreshStrategy,
     SendingEmailService,
-    // LocalStrategy,
+    LocalStrategy,
   ],
 })
 export class AuthModule {}

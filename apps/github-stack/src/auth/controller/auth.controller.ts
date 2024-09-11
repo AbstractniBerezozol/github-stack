@@ -11,15 +11,14 @@ import { AuthService } from "../service/auth.service";
 import { JwtAuthGuard } from "../guards/jwt.guard";
 import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
 import { CreateUserDto } from "../../users/domain/dto/create-user.dto";
-import { LocalStrategy } from "../strategies/local.strategy";
-import { LocalAuthGuard } from "../guards/local-auth.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags("auth")
 @ApiBearerAuth()
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(AuthGuard("local"))
   @Post("login")
   @ApiBody({ type: AuthPayloadDto })
   async login(@Body() data: AuthPayloadDto) {
