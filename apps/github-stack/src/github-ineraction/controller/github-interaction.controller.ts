@@ -10,15 +10,15 @@ import {
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Roles } from "../../auth/domain/decorator/roles.decorator";
-import { LocalAuthGuard } from "../../auth/guards/local-auth.guard";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { SearchBy } from "../domain/enum/repository.enum";
 import { GithubIneractionService } from "../service/github-ineraction.service";
 import { RolesGuard } from "../../auth/guards/roles.guard";
 import { UserRole } from "../../users/domain/enum/roles.enum";
 import { SendingEmailService } from "../service/sending-email.service";
+import { AuthGuard } from "@nestjs/passport";
 
-@UseGuards(LocalAuthGuard)
+@UseGuards(AuthGuard("jwt"))
 @ApiTags("github-interaction")
 @Controller("github-interaction")
 export class GithubInteractionController {

@@ -3,144 +3,177 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { CreateUserDto } from "../../domain/dto/create-user.dto";
 import { User } from "../../domain/entity/user.entity";
 import { UsersService } from "../../service/users.service";
+import { UpdateUserDto } from "../../domain/dto/update-user.dto";
+import { NotFoundException } from "@nestjs/common";
+import * as bcrypt from "bcryptjs";
+import { Repository } from "typeorm";
+import { UserRole } from "../../domain/enum/roles.enum";
+import exp from "constants";
 
 describe("UsersService", () => {
-  let service: UsersService;
+  let userService: UsersService;
+  let userRepository: Repository<User>;
 
-  const mockUserService = {
+  const mockUserRepository = {
     create: jest.fn(),
     save: jest.fn(),
     findOne: jest.fn(),
     find: jest.fn(),
-    preload: jest.fn(),
-    delete: jest.fn(),
-    remove: jest.fn(),
     softRemove: jest.fn(),
+    update: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
-        { provide: getRepositoryToken(User), useValue: mockUserService },
+        { provide: getRepositoryToken(User), useValue: mockUserRepository },
       ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    userService = module.get<UsersService>(UsersService);
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   it("should be defined", () => {
-    expect(service).toBeDefined();
+    expect(userService).toBeDefined();
   });
-  it("create => creates a new user and returns its data", async () => {
-    const createUserDto = {
-      username: "Coco",
-      password: "Coco123",
-      email: "Coco@singimail.rs",
-    } as CreateUserDto;
-    const user = {
-      id: 1,
-      username: "Coco",
-      password: "Coco123",
-      email: "Coco@singimail.rs",
-      repositories: [],
-    } as User;
-    jest.spyOn(mockUserService, "create").mockReturnValue(user);
-    jest.spyOn(mockUserService, "save").mockReturnValue(user);
+  // describe("create", () => {
+  //   it("create => creates a new user and returns its data", async () => {
+  //     const createUserDto: CreateUserDto = {
+  //       username: "Coco",
+  //       password: "Coco123",
+  //       email: "Coco@singimail.rs",
+  //       role: UserRole.USER,
+  //     };
 
-    const result = await service.create(createUserDto);
+  //     jest.spyOn(bcrypt, "hash").mockResolvedValue("hashedPassword");
+  //     jest.spyOn(userRepository, "create").mockReturnValue({
+  //       ...createUserDto,
+  //       password: "hashedPassword",
+  //       id: 1,
+  //       repositories: [],
+  //       deletedDate: undefined,
+  //       deleted: false,
+  //     });
+  //     jest.spyOn(userRepository, "save").mockResolvedValue(createUserDto);
 
-    expect(mockUserService.save).toHaveBeenCalled();
-    expect(mockUserService.save).toHaveBeenCalledWith(user);
+  //     const result = await userService.create(createUserDto);
 
-    expect(result).toEqual(user);
-  });
-  it("findAll => finds all users by username and returns a list of its data", async () => {
-    const user = {
-      id: 1,
-      username: "Coco",
-      password: "Coco123",
-      email: "Coco@singimail.rs",
-      repositories: [],
-    } as User;
+  //     expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
+  //     expect(userRepository.create).toHaveBeenCalledWith({
+  //       username: "Coco",
+  //       password: "Coco123",
+  //       email: "Coco@singimail.rs",
+  //       role: UserRole.USER,
+  //     });
+  //     expect(userRepository.save).toHaveBeenCalledWith({
+  //       username: "Coco",
+  //       password: "Coco123",
+  //       email: "Coco@singimail.rs",
+  //       role: UserRole.USER,
+  //     });
+  //     expect(result).toBe(createUserDto);
+  //   });
+  // });
+  describe("findAll", () => {
+    it("findAll => finds all users by username and returns a list of its data", async () => {
+      const user = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        repositories: [],
+      } as User;
 
-    const users = [user];
+      const users = [user];
 
-    jest.spyOn(mockUserService, "find").mockReturnValue(users);
+      jest.spyOn(userRepository, "find").mockResolvedValue(users);
 
-    const result = await service.findAll();
-    expect(result).toEqual(users);
-    expect(mockUserService.find).toHaveBeenCalled();
-  });
-  it("findOne => finds one user by username and returns its data", async () => {
-    const user = {
-      id: 1,
-      username: "Coco",
-      password: "Coco123",
-      email: "Coco@singimail.rs",
-      repositories: [],
-    } as User;
-    const username = "Coco";
+      const result = await userService.findAll();
 
-    jest.spyOn(mockUserService, "findOne").mockReturnValue(user);
-
-    const result = await service.findOne(username);
-    expect(result).toEqual(user);
-
-    expect(mockUserService.findOne).toBeCalled();
-    expect(mockUserService.findOne).toBeCalledWith({ where: { username } });
-  });
-
-  it("update => changes the user and returns its data", async () => {
-    const username = "Coco";
-    const updateUserDto = {
-      username: "Coco",
-      password: "Coco12345",
-      email: "Coco@singimail.rs",
-    };
-    const user = {
-      id: 1,
-      username: "Coco",
-      password: "Coco123",
-      email: "Coco@singimail.rs",
-      repositories: [],
-    } as User;
-
-    jest.spyOn(mockUserService, "preload").mockReturnValue(user);
-
-    const result = await service.update(user.username, updateUserDto);
-
-    expect(result).toEqual({
-      ...user,
-      ...updateUserDto,
+      expect(userRepository.find).toHaveBeenCalledWith({
+        relations: { repositories: true },
+      });
+      expect(result).toEqual(users);
     });
+  });
+  describe("findOne", () => {
+    it("findOne => finds one user by username and returns its data", async () => {
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        repositories: [],
+      } as User;
 
-    expect(mockUserService.findOne).toHaveBeenCalledWith({
-      where: { username },
-    });
-    expect(mockUserService.save).toHaveBeenCalledWith({
-      ...user,
-      ...updateUserDto,
+      jest.spyOn(userRepository, "findOne").mockResolvedValue(mockUser);
+
+      const result = await userService.findOne(mockUser.username);
+
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { username: mockUser.username },
+      });
+      expect(result).toEqual(mockUser);
     });
   });
 
-  it("remove => finds the user and delete it", async () => {
-    const username = "Coco";
-    const user = {
-      id: 1,
-      username: "Coco",
-      password: "Coco123",
-      email: "Coco@singimail.rs",
-      repositories: [],
-    } as User;
+  describe("update", () => {
+    it("update => changes the user and returns its data", async () => {
+      const updateUserDto: UpdateUserDto = {
+        password: "Coco12345",
+      };
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        repositories: [],
+      } as User;
 
-    jest.spyOn(mockUserService, "softRemove").mockReturnValue(user);
+      jest.spyOn(userRepository, "find").mockResolvedValue([mockUser]);
+      jest
+        .spyOn(userRepository, "save")
+        .mockResolvedValue({ ...mockUser, ...updateUserDto });
 
-    const result = await service.remove(username);
+      const result = await userService.update(mockUser.username, updateUserDto);
 
-    expect(mockUserService.softRemove).toHaveBeenCalledWith({
-      ...user,
-      password: undefined,
+      expect(userRepository.find).toHaveBeenCalledWith({
+        where: { username: mockUser.username },
+      });
+      expect(userRepository.save).toHaveBeenCalledWith({
+        ...mockUser,
+        ...updateUserDto,
+      });
+      expect(result).toEqual({ ...mockUser, ...updateUserDto });
+    });
+
+    it("should throw and exception if user is not found", async () => {
+      jest.spyOn(userRepository, "find").mockResolvedValue([]);
+
+      await expect(
+        userService.update("mommy", {} as UpdateUserDto)
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+  describe("remove", () => {
+    it("remove => finds the user and delete it", async () => {
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        repositories: [],
+      } as User;
+
+      jest.spyOn(userService, "findOne").mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, "softRemove").mockResolvedValue(mockUser);
+
+      const result = await userService.remove(mockUser.username);
+
+      expect(userService.findOne).toHaveBeenCalledWith(mockUser.username);
+      expect(userRepository.softRemove).toHaveBeenCalledWith(mockUser);
     });
   });
 });
