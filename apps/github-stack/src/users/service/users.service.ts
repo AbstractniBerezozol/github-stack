@@ -72,7 +72,7 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
   async update(username: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.find({ where: { username } });
+    const user = await this.userRepository.findOne({ where: { username } });
     if (!user) {
       throw new NotFoundException(`User not found`);
     }

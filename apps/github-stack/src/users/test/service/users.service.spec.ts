@@ -1,14 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { CreateUserDto } from "../../domain/dto/create-user.dto";
 import { User } from "../../domain/entity/user.entity";
 import { UsersService } from "../../service/users.service";
 import { UpdateUserDto } from "../../domain/dto/update-user.dto";
 import { NotFoundException } from "@nestjs/common";
-import * as bcrypt from "bcryptjs";
 import { Repository } from "typeorm";
+import * as bcrypt from 'bcryptjs'
+import { CreateUserDto } from "../../domain/dto/create-user.dto";
 import { UserRole } from "../../domain/enum/roles.enum";
-import exp from "constants";
 
 describe("UsersService", () => {
   let userService: UsersService;
@@ -35,47 +34,51 @@ describe("UsersService", () => {
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
+  afterEach(() => {
+    jest.clearAllMocks;
+  });
+
   it("should be defined", () => {
     expect(userService).toBeDefined();
   });
-  // describe("create", () => {
-  //   it("create => creates a new user and returns its data", async () => {
-  //     const createUserDto: CreateUserDto = {
-  //       username: "Coco",
-  //       password: "Coco123",
-  //       email: "Coco@singimail.rs",
-  //       role: UserRole.USER,
-  //     };
+  describe("create", () => {
+    it("create => creates a new user and returns its data", async () => {
+      const createUserDto: CreateUserDto = {
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        role: UserRole.USER,
+      };
 
-  //     jest.spyOn(bcrypt, "hash").mockResolvedValue("hashedPassword");
-  //     jest.spyOn(userRepository, "create").mockReturnValue({
-  //       ...createUserDto,
-  //       password: "hashedPassword",
-  //       id: 1,
-  //       repositories: [],
-  //       deletedDate: undefined,
-  //       deleted: false,
-  //     });
-  //     jest.spyOn(userRepository, "save").mockResolvedValue(createUserDto);
+      jest.spyOn(bcrypt, "hash").mockResolvedValue("hashedPassword");
+      jest.spyOn(userRepository, "create").mockReturnValue({
+        ...createUserDto,
+        password: "hashedPassword",
+        id: 1,
+        repositories: [],
+        deletedDate: undefined,
+        deleted: false,
+      });
+      jest.spyOn(userRepository, "save").mockResolvedValue(createUserDto);
 
-  //     const result = await userService.create(createUserDto);
+      const result = await userService.create(createUserDto);
 
-  //     expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
-  //     expect(userRepository.create).toHaveBeenCalledWith({
-  //       username: "Coco",
-  //       password: "Coco123",
-  //       email: "Coco@singimail.rs",
-  //       role: UserRole.USER,
-  //     });
-  //     expect(userRepository.save).toHaveBeenCalledWith({
-  //       username: "Coco",
-  //       password: "Coco123",
-  //       email: "Coco@singimail.rs",
-  //       role: UserRole.USER,
-  //     });
-  //     expect(result).toBe(createUserDto);
-  //   });
-  // });
+      expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
+      expect(userRepository.create).toHaveBeenCalledWith({
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        role: UserRole.USER,
+      });
+      expect(userRepository.save).toHaveBeenCalledWith({
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        role: UserRole.USER,
+      });
+      expect(result).toBe(createUserDto);
+    });
+  });
   describe("findAll", () => {
     it("findAll => finds all users by username and returns a list of its data", async () => {
       const user = {
@@ -132,14 +135,14 @@ describe("UsersService", () => {
         repositories: [],
       } as User;
 
-      jest.spyOn(userRepository, "find").mockResolvedValue([mockUser]);
+      jest.spyOn(userRepository, "findOne").mockResolvedValue(mockUser);
       jest
         .spyOn(userRepository, "save")
         .mockResolvedValue({ ...mockUser, ...updateUserDto });
 
       const result = await userService.update(mockUser.username, updateUserDto);
 
-      expect(userRepository.find).toHaveBeenCalledWith({
+      expect(userRepository.findOne).toHaveBeenCalledWith({
         where: { username: mockUser.username },
       });
       expect(userRepository.save).toHaveBeenCalledWith({
@@ -150,11 +153,11 @@ describe("UsersService", () => {
     });
 
     it("should throw and exception if user is not found", async () => {
-      jest.spyOn(userRepository, "find").mockResolvedValue([]);
+      jest.spyOn(userRepository, "findOne").mockResolvedValue(null);
 
       await expect(
         userService.update("mommy", {} as UpdateUserDto)
-      ).rejects.toThrow(NotFoundException);
+      ).rejects.toThrow(new NotFoundException("User not found"));
     });
   });
   describe("remove", () => {

@@ -133,7 +133,7 @@ describe("SendingEmailService", () => {
 
       await expect(
         sendingEmailService.sendMonthSummary(mockUser)
-      ).rejects.toThrowError(Error);
+      ).rejects.toThrow(Error);
     });
   });
 
@@ -154,6 +154,7 @@ describe("SendingEmailService", () => {
         subject: "New Password",
         text: `Greetings! Here is your new password: ${password}`,
       });
+      
     });
   });
 });

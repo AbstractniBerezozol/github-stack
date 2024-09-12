@@ -268,9 +268,6 @@ describe("GithubIneractionService", () => {
       );
       expect(queryBuilder.getMany).toHaveBeenCalled();
       expect(result).toEqual(mockedRepository);
-
-      
     });
   });
-
 });
