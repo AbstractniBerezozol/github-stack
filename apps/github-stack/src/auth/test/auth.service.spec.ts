@@ -175,10 +175,10 @@ describe("AuthService", () => {
       expect(usersService.findOne).toHaveBeenCalledWith("test");
       expect(authService.generateRandomPassword).toHaveBeenCalled();
       expect(bcrypt.hash).toHaveBeenCalledWith(mockNewPassword, 10);
-      expect(usersService.update).toHaveBeenCalledWith({
-        username: mockUser.username,
-        password: mockHashedPassword,
-      });
+      expect(usersService.update).toHaveBeenCalledWith(
+       mockUser.username,
+       mockHashedPassword,
+      );
       expect(sendingEmailService.sendNewPassword).toHaveBeenCalledWith(
         mockUser.email,
         mockNewPassword

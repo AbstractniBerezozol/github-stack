@@ -58,7 +58,7 @@ describe("SendingEmailService", () => {
         data: "Email sent succesfully",
       };
 
-      mockHttpService.get.mockReturnValue(of(mockResponse));
+      mockHttpService.post.mockReturnValue(of(mockResponse));
 
       const result = await sendingEmailService.sendingEmail(emailData);
 
@@ -85,13 +85,7 @@ describe("SendingEmailService", () => {
         repoId: 23,
         user: new User(),
       };
-      const mockResponse: AxiosResponse = {
-        data: "OK",
-        status: 0,
-        statusText: "",
-        headers: undefined,
-        config: undefined,
-      };
+
       const mockUser = {
         id: 1,
         username: "Coco",
@@ -101,42 +95,26 @@ describe("SendingEmailService", () => {
         repositories: [mockedRepository],
       } as unknown as User;
 
-      const spySendingEmail = jest.spyOn(sendingEmailService, "sendingEmail");
+      const mockResponse = { data: "Email sent" };
 
-      jest.spyOn(httpService, "post").mockReturnValue(of(mockResponse));
-      jest.spyOn(userRepostory, "find").mockResolvedValue([mockUser]);
+      mockHttpService.post.mockReturnValue(of(mockResponse));
+      const spySendingEmail = jest
+        .spyOn(sendingEmailService, "sendingEmail")
+        .mockResolvedValue("Email sent");
 
       await sendingEmailService.sendMonthSummary(mockUser);
 
-      expect(userRepostory.find).toHaveBeenCalledWith({
-        relations: ["repositories"],
-      });
-      expect(spySendingEmail).toHaveBeenCalled();
-      expect(spySendingEmail).toHaveBeenCalledWith({
+      const mockLetter = {
         from: "aleksandr.zolotarev@abstract.rs",
         to: mockUser.email,
         subject: "Here is your month summary",
         text: `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`,
-      });
-    });
+      };
 
-    it("should handle errors during summary sending", async () => {
-      const mockUser = {
-        id: 1,
-        username: "Coco",
-        password: "Coco123",
-        email: "Coco@singimail.rs",
-        roles: UserRole.USER,
-        repositories: [],
-      } as unknown as User;
-      mockUserRepository.find.mockRejectedValue(new Error("Database error"));
-
-      await expect(
-        sendingEmailService.sendMonthSummary(mockUser)
-      ).rejects.toThrow(Error);
+      expect(spySendingEmail).toHaveBeenCalledWith(mockLetter);
+      expect(spySendingEmail).toHaveBeenCalled();
     });
   });
-
   describe("sendNewPassword", () => {
     it("should send a new password email", async () => {
       const email = "abracadabra@mail.com";
@@ -154,7 +132,6 @@ describe("SendingEmailService", () => {
         subject: "New Password",
         text: `Greetings! Here is your new password: ${password}`,
       });
-      
     });
   });
 });

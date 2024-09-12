@@ -5,7 +5,7 @@ import { UsersService } from "../../service/users.service";
 import { UpdateUserDto } from "../../domain/dto/update-user.dto";
 import { NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
-import * as bcrypt from 'bcryptjs'
+import * as bcrypt from "bcryptjs";
 import { CreateUserDto } from "../../domain/dto/create-user.dto";
 import { UserRole } from "../../domain/enum/roles.enum";
 
@@ -50,33 +50,28 @@ describe("UsersService", () => {
         role: UserRole.USER,
       };
 
-      jest.spyOn(bcrypt, "hash").mockResolvedValue("hashedPassword");
-      jest.spyOn(userRepository, "create").mockReturnValue({
+      const hashedPassword = "hashedPassword";
+
+      const createdUser = {
         ...createUserDto,
-        password: "hashedPassword",
-        id: 1,
-        repositories: [],
-        deletedDate: undefined,
-        deleted: false,
-      });
-      jest.spyOn(userRepository, "save").mockResolvedValue(createUserDto);
+        password: hashedPassword,
+      } as User;
+
+      jest.spyOn(bcrypt, "hash").mockResolvedValue(hashedPassword);
+      jest.spyOn(userRepository, "create").mockReturnValue(createdUser);
+      jest.spyOn(userRepository, "save").mockResolvedValue(createdUser);
 
       const result = await userService.create(createUserDto);
 
-      expect(bcrypt.hash).toHaveBeenCalledWith("password", 10);
+      expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
       expect(userRepository.create).toHaveBeenCalledWith({
-        username: "Coco",
-        password: "Coco123",
-        email: "Coco@singimail.rs",
-        role: UserRole.USER,
+        username: createUserDto.username,
+        password: hashedPassword,
+        email: createUserDto.email,
+        role: createUserDto.role,
       });
-      expect(userRepository.save).toHaveBeenCalledWith({
-        username: "Coco",
-        password: "Coco123",
-        email: "Coco@singimail.rs",
-        role: UserRole.USER,
-      });
-      expect(result).toBe(createUserDto);
+      expect(userRepository.save).toHaveBeenCalledWith(createdUser);
+      expect(result).toBe(createdUser);
     });
   });
   describe("findAll", () => {
