@@ -5,8 +5,6 @@ import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
-import { GitHubScheduler } from "../domain/scheduler/github-scheduler";
-import { resolve } from "path";
 
 @Injectable()
 export class SendingEmailService {
