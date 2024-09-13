@@ -1,0 +1,28 @@
+version: '3'
+services:
+  email:
+    container_name: email
+    build: 
+      context: .
+      args:
+        - APP=email
+    restart: always
+    ports:
+      - "3001:3000"
+  github-stack:
+    container_name: github-stack
+    build: 
+      context: .
+      args:
+        - APP=github-stack
+    restart: always
+    ports:
+      - "3000:3000"
+  db:
+    image:  postgres
+    restart: always 
+    ports:
+      - "5432:5432"
+    environment:
+       POSTGRES_PASSWORD: pass123
+        
