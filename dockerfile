@@ -4,7 +4,8 @@ FROM base AS development
 ARG APP
 ARG NODE_ENV=development
 ARG NODE_ENV=${APP}
-WORKDIR /apps/${APP}
+
+WORKDIR /usr/src/app 
 COPY package.json package-lock.json ./
 RUN npm install
 COPY  . . 

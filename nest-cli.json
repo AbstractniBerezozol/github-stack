@@ -27,15 +27,6 @@
       "compilerOptions": {
         "tsConfigPath": "apps/email/tsconfig.app.json"
       }
-    },
-    "email-app": {
-      "type": "application",
-      "root": "apps/email-app",
-      "entryFile": "main",
-      "sourceRoot": "apps/email-app/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/email-app/tsconfig.app.json"
-      }
     }
   }
 }
