@@ -45,7 +45,7 @@ export class SendingEmailService {
 
         const delay = Math.min(
           this.defaultDelay * Math.pow(2, attempts),
-          this.maxAttempts
+          this.maxDelay
         );
         this.logger.warn(`Retry ${attempts} failed. Retrying in ${delay} ms`);
 
