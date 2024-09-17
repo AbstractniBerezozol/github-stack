@@ -6,8 +6,11 @@ ARG NODE_ENV=development
 ARG NODE_ENV=${APP}
 
 WORKDIR /usr/src/app 
-COPY package.json package-lock.json ./
+COPY package.json  ./
 RUN npm install
 COPY  . . 
-RUN npm run build ${APP}
+
+RUN  npm run build
+
+CMD [ "npm", "run", "start" ]
 
