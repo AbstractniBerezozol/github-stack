@@ -69,7 +69,7 @@ export class SendingEmailService {
       subject: subject,
       text: text,
     };
-    await this.sendingEmail(letter);
+    await this.sendEmailWithBackoff(letter);
   }
 
   async sendNewPassword(email: string, password: string) {
@@ -79,6 +79,6 @@ export class SendingEmailService {
       subject: "New Password",
       text: `Greetings! Here is your new password: ${password}`,
     };
-    await this.sendingEmail(letter);
+    await this.sendEmailWithBackoff(letter);
   }
 }

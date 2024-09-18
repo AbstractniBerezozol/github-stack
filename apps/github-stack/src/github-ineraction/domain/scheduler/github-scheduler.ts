@@ -68,7 +68,7 @@ export class GitHubScheduler {
       text: text,
     };
 
-    await this.sendingEmailService.sendingEmail(letter);
+    await this.sendingEmailService.sendEmailWithBackoff(letter);
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)

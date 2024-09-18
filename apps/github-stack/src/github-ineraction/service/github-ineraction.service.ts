@@ -91,6 +91,8 @@ export class GithubIneractionService {
         user,
       })
 
+      console.log({user})
+
       await this.gitRepository.save(newRepo)
 
       return this.gitRepository.find({

@@ -6,7 +6,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
 import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
 import { ScheduleModule } from "@nestjs/schedule";
-
 @Module({
   imports: [
     GithubInteractionModule,
