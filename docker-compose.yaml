@@ -12,7 +12,7 @@ services:
       args:
         - APP=email
     ports:
-      - "4444:3001"
+      - "3001:3001"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -25,7 +25,7 @@ services:
       args:
         - APP=github-stack
     ports:
-      - "4445:3000"
+      - "3000:3000"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
