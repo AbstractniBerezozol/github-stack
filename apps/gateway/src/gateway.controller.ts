@@ -16,6 +16,6 @@ export class GatewayController {
 
     const payload = emailDto
 
-    return this.client.send(pattern, payload).toPromise();
+    return this.client.send(pattern, payload);
   }
 }

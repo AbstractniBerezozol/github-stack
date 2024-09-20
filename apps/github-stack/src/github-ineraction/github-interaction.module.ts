@@ -9,10 +9,11 @@ import { GitHubScheduler } from "./domain/scheduler/github-scheduler";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { SendingEmailService } from "./service/sending-email.service";
+import { LatestReleases } from "./domain/entity/release.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, GitRepository]),
+    TypeOrmModule.forFeature([User, GitRepository, LatestReleases]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

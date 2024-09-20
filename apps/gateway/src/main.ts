@@ -6,8 +6,8 @@ const logger = new Logger()
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(GatewayModule,);
-  await app.listen(3002);
+  const app = await NestFactory.createMicroservice(GatewayModule,);
+  await app.listen();
 
   console.log('Gateway is running');
 }

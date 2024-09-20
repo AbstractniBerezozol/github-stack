@@ -1,6 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { ApiProperty } from '@nestjs/swagger'
 import { User } from '../../../users/domain/entity/user.entity'
+import { release } from 'os'
+import { LatestReleases } from './release.entity'
 
 @Entity()
 export class GitRepository {
@@ -40,4 +42,7 @@ export class GitRepository {
 
   @ManyToOne(() => User, (user) => user.repositories)
   user: User
+
+  @ManyToOne(() => LatestReleases, release => release.gitRepoId)
+  gitRepoId: number;
 }
