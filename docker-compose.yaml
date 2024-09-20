@@ -1,0 +1,46 @@
+version: "3"
+
+networks:
+  fullstack:
+    name: fullstack
+    driver: bridge
+
+services:
+  email:
+    container_name: email
+    build:
+      args:
+        - APP=email
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - fullstack
+
+  github-stack:
+    container_name: github-stack
+    build:
+      args:
+        - APP=github-stack
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - fullstack
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=pass123
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=GitHub-Task
+    volumes:
+      - "./pgdata:/var/lib/postgresql/data2/pgdata"
+    networks:
+      - fullstack
