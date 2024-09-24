@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { ApiProperty } from '@nestjs/swagger'
 import { User } from '../../../users/domain/entity/user.entity'
 import { release } from 'os'
-import { LatestReleases } from './release.entity'
+import { Release } from './release.entity'
 
 @Entity()
 export class GitRepository {
@@ -43,6 +43,6 @@ export class GitRepository {
   @ManyToOne(() => User, (user) => user.repositories)
   user: User
 
-  @ManyToOne(() => LatestReleases, release => release.gitRepoId)
-  gitRepoId: number;
+  @OneToMany(() => Release, (release) => release.id)
+  release: Release ;
 }

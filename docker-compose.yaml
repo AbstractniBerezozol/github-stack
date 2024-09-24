@@ -9,8 +9,8 @@ services:
   email:
     container_name: email
     build:
-      args:
-        - APP=email
+      dockerfile: dockerfile
+      context: ./apps/email
     ports:
       - "3001:3001"
     volumes:
@@ -22,8 +22,8 @@ services:
   github-stack:
     container_name: github-stack
     build:
-      args:
-        - APP=github-stack
+      dockerfile: dockerfile
+      context: ./apps/github-stack
     ports:
       - "3000:3000"
     volumes:

@@ -7,7 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SearchBy } from "../domain/enum/repository.enum";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { User } from "../../users/domain/entity/user.entity";
-import { LatestReleases } from "../domain/entity/release.entity";
+import { Release } from "../domain/entity/release.entity";
 import { release } from "os";
 
 @Injectable()
@@ -21,8 +21,8 @@ export class GithubIneractionService {
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
     private readonly gitRepository: Repository<GitRepository>,
-    @InjectRepository(LatestReleases)
-    private readonly listOfReleases: Repository<LatestReleases>
+    @InjectRepository(Release)
+    private readonly listOfReleases: Repository<Release>
   ) {}
 
   async searchRepositories(
@@ -96,13 +96,11 @@ export class GithubIneractionService {
       });
 
       const storeLastRelease = this.listOfReleases.create({
-        gitRepoId: repo.id,
         release: repo.latestRelease,
-        release_date: new Date()
-      })
+        release_date: new Date(),
+      });
 
       await this.listOfReleases.save(storeLastRelease);
-
 
       await this.gitRepository.save(newRepo);
 
