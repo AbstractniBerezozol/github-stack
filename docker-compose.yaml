@@ -9,10 +9,14 @@ services:
   email:
     container_name: email
     build:
-      args:
-        - APP=email
+     dockerfile: dockerfile-email
     ports:
       - "3001:3001"
+    depends_on:
+      postgres: 
+        condition: service_healthy
+    links: 
+      - postgres
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -22,8 +26,7 @@ services:
   github-stack:
     container_name: github-stack
     build:
-      args:
-        - APP=github-stack
+      dockerfile: dockerfile-github-stack
     ports:
       - "3000:3000"
     volumes:
@@ -42,5 +45,10 @@ services:
       - POSTGRES_DB=GitHub-Task
     volumes:
       - "./pgdata:/var/lib/postgresql/data2/pgdata"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - fullstack
