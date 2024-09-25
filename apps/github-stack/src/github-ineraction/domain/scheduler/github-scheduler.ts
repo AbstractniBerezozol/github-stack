@@ -78,7 +78,7 @@ export class GitHubScheduler {
 
   @Cron("0 0 1 * *")
   async handleMonthSummary() {
-    const users = await this.userRep.find({ relations: ["repositories"] });
+    const users = await this.userRep.find({ relations: ["repositories", "repositories.releases"] });
     for (const user of users) {
       await this.sendingEmailService.sendMonthSummary(user);
     }

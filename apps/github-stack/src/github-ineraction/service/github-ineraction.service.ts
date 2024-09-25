@@ -91,16 +91,17 @@ export class GithubIneractionService {
         stargazers_count: repo.stargazers_count,
         watchers_count: repo.watchers_count,
         forks_count: repo.forks_count,
-        latestRelease: repo.latestRelease,
         user,
       });
 
       const storeLastRelease = this.listOfReleases.create({
         release: repo.latestRelease,
         release_date: new Date(),
+        repository: newRepo,
       });
-
-      await this.listOfReleases.save(storeLastRelease);
+      newRepo.release = [storeLastRelease];
+      
+      // await this.listOfReleases.save(storeLastRelease);
 
       await this.gitRepository.save(newRepo);
 

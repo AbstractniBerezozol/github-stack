@@ -5,6 +5,8 @@ import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { release } from "os";
 
 @Injectable()
 export class SendingEmailService {
@@ -16,7 +18,9 @@ export class SendingEmailService {
   constructor(
     private readonly httpService: HttpService,
     @InjectRepository(User)
-    private readonly userRep: Repository<User>
+    private readonly userRep: Repository<User>,
+    @InjectRepository(GitRepository)
+    private readonly gitRep: Repository<GitRepository>
   ) {}
 
   private sleep(ms: number): Promise<void> {
@@ -59,8 +63,16 @@ export class SendingEmailService {
   }
   async sendMonthSummary(user: User) {
     const summary = user.repositories
-      .map((repo) => `- ${repo.name}`)
-      .join("\n");
+      .map((repo) => {
+        const releases = repo.release.map(
+          (release) =>
+            ` Here is your Github releases: ${release.release}, released on ${
+              release.release_date
+            }`
+        );
+      })
+      .join("\n\n");
+
     const subject = "Here is your month summary";
     const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;
     const letter = {
