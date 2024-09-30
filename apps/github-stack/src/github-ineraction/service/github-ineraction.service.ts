@@ -9,6 +9,7 @@ import { GitRepository } from "../domain/entity/repository.entity";
 import { User } from "../../users/domain/entity/user.entity";
 import { Release } from "../domain/entity/release.entity";
 import { release } from "os";
+import { GitrepositoryService } from "./gitrepository.service";
 
 @Injectable()
 export class GithubIneractionService {
@@ -17,12 +18,13 @@ export class GithubIneractionService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly gitServ: GitrepositoryService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
     private readonly gitRepository: Repository<GitRepository>,
     @InjectRepository(Release)
-    private readonly listOfReleases: Repository<Release>
+    private readonly releasesRepository: Repository<Release>
   ) {}
 
   async searchRepositories(
@@ -94,14 +96,13 @@ export class GithubIneractionService {
         user,
       });
 
-      const storeLastRelease = this.listOfReleases.create({
+      const storeLastRelease = this.releasesRepository.create({
         release: repo.latestRelease,
         release_date: new Date(),
         repository: newRepo,
       });
+
       newRepo.release = [storeLastRelease];
-      
-      // await this.listOfReleases.save(storeLastRelease);
 
       await this.gitRepository.save(newRepo);
 
@@ -125,10 +126,6 @@ export class GithubIneractionService {
   }
 
   async getWatchlist(user: User): Promise<GitRepository[]> {
-    return this.gitRepository
-      .createQueryBuilder("git_repository")
-      .innerJoin("git_repository.user", "user")
-      .where("user.username= :username", { username: user.username })
-      .getMany();
+    return this.gitServ.WatchlistQueryExample(user);
   }
 }

@@ -7,7 +7,6 @@ import {
 } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
 import { User } from "../../../users/domain/entity/user.entity";
-import { release } from "os";
 import { Release } from "./release.entity";
 
 @Entity()

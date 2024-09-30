@@ -64,7 +64,7 @@ export class SendingEmailService {
   async sendMonthSummary(user: User) {
     const summary = user.repositories
       .map((repo) => {
-        const releases = repo.release.map(
+        return repo.release.map(
           (release) =>
             ` Here is your Github releases: ${release.release}, released on ${
               release.release_date
