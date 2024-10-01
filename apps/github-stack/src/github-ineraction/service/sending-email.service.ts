@@ -62,19 +62,22 @@ export class SendingEmailService {
     }
   }
   async sendMonthSummary(user: User) {
-    const summary = user.repositories
-      .map((repo) => {
-        return repo.release.map(
+    const repositoriesSummary = [];
+    for (const repo of user.repositories) {
+      const repoSummary = `${repo.name}`;
+      const releaseSummary = repo.release
+        .map(
           (release) =>
-            ` Here is your Github releases: ${release.release}, released on ${
-              release.release_date
-            }`
-        );
-      })
-      .join("\n\n");
+            `This release is ${release.release}, released on ${release.release_date}`
+        )
+        .join("\n");
+
+      const summary = repoSummary + releaseSummary;
+      repositoriesSummary.push(summary);
+    }
 
     const subject = "Here is your month summary";
-    const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;
+    const text = `Hello, please, here is your monthly summary activity:\n\n${repositoriesSummary}`;
     const letter = {
       from: "aleksandr.zolotarev@abstract.rs",
       to: user.email,
