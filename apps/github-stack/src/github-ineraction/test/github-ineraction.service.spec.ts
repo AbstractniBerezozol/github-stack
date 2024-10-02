@@ -201,7 +201,7 @@ describe("GithubIneractionService", () => {
         stargazers_count: 0,
         watchers_count: 0,
         forks_count: 0,
-        latestRelease: "",
+        release: []
       };
       mockRepository.findOne.mockResolvedValue(mockRepositoryDelete);
 
@@ -230,9 +230,9 @@ describe("GithubIneractionService", () => {
         stargazers_count: 103,
         watchers_count: 6,
         forks_count: 10509,
-        latestRelease: "v1.7.19",
         repoId: 23,
         user: new User(),
+        release: []
       };
       const mockUser = {
         id: 1,

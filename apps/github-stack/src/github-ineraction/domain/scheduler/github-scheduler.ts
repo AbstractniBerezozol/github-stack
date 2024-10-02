@@ -51,8 +51,8 @@ export class GitHubScheduler {
     const repositories = await this.gitRepository.find({ relations: ["user"] });
     for (const repo of repositories) {
       const release = await this.getLatestReliase(repo);
-      if (repo.latestRelease != release) {
-        repo.latestRelease = release;
+      if (repo.release != release) {
+        repo.release = release;
         this.gitRepository.save(repo);
         await this.sendingNotification(repo);
       }

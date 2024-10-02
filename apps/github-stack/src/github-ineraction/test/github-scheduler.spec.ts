@@ -21,7 +21,7 @@ const mockConfigService = {
 
 const mockSendingEmail = {
   sendMonthSummary: jest.fn(),
-  sendingEmail: jest.fn(),
+  sendEmailWithBackoff: jest.fn(),
 };
 
 const mockUserRepository = {
@@ -80,9 +80,9 @@ describe("GithubScheduler", () => {
         stargazers_count: 103,
         watchers_count: 6,
         forks_count: 10509,
-        latestRelease: "v1.7.19",
         repoId: 23,
         user: new User(),
+        release: [],
       };
       const mockResponse = { data: { name: "v2.1.23" } };
       mockHttpService.get.mockReturnValue(of(mockResponse));
@@ -102,9 +102,9 @@ describe("GithubScheduler", () => {
         stargazers_count: 103,
         watchers_count: 6,
         forks_count: 10509,
-        latestRelease: "v1.7.19",
         repoId: 23,
         user: new User(),
+        release: [],
       };
       mockHttpService.get.mockReturnValue({
         toPromise: () => Promise.reject("API ERROR"),
@@ -138,10 +138,10 @@ describe("GithubScheduler", () => {
         latestRelease: "v1.7.19",
         repoId: 23,
         user: mockUser,
-      } as GitRepository;
+      } as unknown as GitRepository;
       mockUser.repositories = [mockedRepository];
 
-      jest.spyOn(gitRepository, "find").mockResolvedValue([mockedRepository]);
+      jest.spyOn(gitRepository, "find").mockResolvedValue(mockUser.repositories);
       jest
         .spyOn(githubScheduler, "getLatestReliase")
         .mockResolvedValue("v1.7.20");
@@ -149,9 +149,9 @@ describe("GithubScheduler", () => {
         .spyOn(gitRepository, "save")
         .mockResolvedValue(mockedRepository);
 
-      const sendEmailSpy = jest
-        .spyOn(sendingEmailService, "sendingEmail")
-        .mockResolvedValue("OK");
+      const sendingNotificationSpy = jest
+        .spyOn(githubScheduler, "sendingNotification")
+        .mockResolvedValue();
 
       await githubScheduler.checkForUpdates();
 
@@ -165,12 +165,7 @@ describe("GithubScheduler", () => {
         ...mockedRepository,
         latestRelease: "v1.7.20",
       });
-      expect(sendEmailSpy).toHaveBeenCalledWith({
-        from: "aleksandr.zolotarev@abstract.rs",
-        to: mockUser.email,
-        subject: "Here is update from your list!",
-        text: `Hello, it is update ${mockedRepository.name} from your Watchlist!!!`,
-      });
+      expect(sendingNotificationSpy).toHaveBeenCalledWith(mockedRepository);
     });
 
     it("should not notify if updates were not found", async () => {
@@ -192,23 +187,24 @@ describe("GithubScheduler", () => {
         stargazers_count: 103,
         watchers_count: 6,
         forks_count: 10509,
-        latestRelease: "v1.7.19",
         repoId: 23,
         user: mockUser,
+        release: [],
       };
       mockUser.repositories = [mockedRepository];
 
-      jest.spyOn(gitRepository, "find").mockResolvedValue([mockedRepository]);
+      jest.spyOn(gitRepository, "find").mockResolvedValue(mockUser.repositories);
       jest
         .spyOn(githubScheduler, "getLatestReliase")
         .mockResolvedValue("v1.7.19");
       const saveSpy = jest
         .spyOn(gitRepository, "save")
         .mockResolvedValue(mockedRepository);
+      const sendingNotificationSpy = jest.spyOn(
+        githubScheduler,
+        "sendingNotification"
+      );
 
-      const sendEmailSpy = jest
-        .spyOn(sendingEmailService, "sendingEmail")
-        .mockResolvedValue("OK");
 
       await githubScheduler.checkForUpdates();
 
@@ -219,7 +215,7 @@ describe("GithubScheduler", () => {
         mockedRepository
       );
       expect(saveSpy).not.toHaveBeenCalled();
-      expect(sendEmailSpy).not.toHaveBeenCalled();
+      expect(sendingNotificationSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -250,7 +246,7 @@ describe("GithubScheduler", () => {
       await githubScheduler.handleMonthSummary();
 
       expect(userRepository.find).toHaveBeenCalledWith({
-        relations: ["repositories"],
+        relations: ["repositories", "repositories.releases"],
       });
 
       expect(sendingEmailService.sendMonthSummary).toHaveBeenCalledWith(
