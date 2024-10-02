@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { GitRepository } from "./repository.entity";

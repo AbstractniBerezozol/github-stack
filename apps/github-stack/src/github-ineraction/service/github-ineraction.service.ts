@@ -8,7 +8,6 @@ import { SearchBy } from "../domain/enum/repository.enum";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { User } from "../../users/domain/entity/user.entity";
 import { Release } from "../domain/entity/release.entity";
-import { release } from "os";
 import { GitrepositoryService } from "./gitrepository.service";
 
 @Injectable()
@@ -19,8 +18,6 @@ export class GithubIneractionService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly gitServ: GitrepositoryService,
-    @InjectRepository(User)
-    private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
     private readonly gitRepository: Repository<GitRepository>,
     @InjectRepository(Release)

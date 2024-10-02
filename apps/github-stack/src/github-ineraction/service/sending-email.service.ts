@@ -6,7 +6,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 import { GitRepository } from "../domain/entity/repository.entity";
-import { release } from "os";
 
 @Injectable()
 export class SendingEmailService {

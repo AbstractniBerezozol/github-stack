@@ -7,7 +7,6 @@ import { MessagePattern } from "@nestjs/microservices";
 export class AppService {
   constructor(private readonly emailService: MailerService) {}
 
-  @MessagePattern({ cmd: "send-email" })
   async sendLetter(emailDto: EmailDto) {
     const from = emailDto.from;
     const to = emailDto.to;
@@ -21,9 +20,11 @@ export class AppService {
     };
     try {
       await this.emailService.sendMail(newLetter);
-      return { success: true, message: "Email is sent" };
+      console.log("Email was successfuly sent");
+      return newLetter;
     } catch (err) {
-      return { success: false, message: "Email is not sent", err};
+      console.log("New error", err);
+      throw new Error("{{We are in trouble now}}");
     }
   }
 }
