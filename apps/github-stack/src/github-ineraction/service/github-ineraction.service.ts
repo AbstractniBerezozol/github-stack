@@ -1,14 +1,13 @@
 import { HttpService } from "@nestjs/axios";
 import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { firstValueFrom, from, lastValueFrom } from "rxjs";
-import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-import { SearchBy } from "../domain/enum/repository.enum";
-import { GitRepository } from "../domain/entity/repository.entity";
+import { firstValueFrom } from "rxjs";
+import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 import { Release } from "../domain/entity/release.entity";
-import { release } from "os";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { SearchBy } from "../domain/enum/repository.enum";
 import { GitrepositoryService } from "./gitrepository.service";
 
 @Injectable()
@@ -17,10 +16,8 @@ export class GithubIneractionService {
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
     private readonly gitServ: GitrepositoryService,
-    @InjectRepository(User)
-    private readonly userRep: Repository<User>,
+    private readonly configService: ConfigService,
     @InjectRepository(GitRepository)
     private readonly gitRepository: Repository<GitRepository>,
     @InjectRepository(Release)

@@ -41,7 +41,7 @@ export class GitRepository {
 
   @Column()
   forks_count: number;
-  
+
   @ManyToOne(() => User, (user) => user.repositories)
   user: User;
 

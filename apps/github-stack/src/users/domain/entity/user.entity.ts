@@ -7,9 +7,8 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from "typeorm";
-import { GitRepository } from "../../../github-ineraction/domain/entity/repository.entity";
 import { UserRole } from "../enum/roles.enum";
-import { Exclude, Expose } from "class-transformer";
+import { GitRepository } from "../../../github-ineraction/domain/entity/repository.entity";
 
 @Entity()
 @Unique("unique_username", ["username"])
