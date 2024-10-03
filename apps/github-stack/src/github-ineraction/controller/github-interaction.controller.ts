@@ -36,12 +36,12 @@ export class GithubInteractionController {
     return this.githubService.searchRepositories(searchBy, value, owner);
   }
 
-  @UseGuards(RolesGuard)
-  @Get("watchlist")
-  @Roles(UserRole.ADMIN)
-  async getWatchlist(@Request() req): Promise<GitRepository[]> {
-    return this.githubService.getWatchlist(req.user);
-  }
+  // @UseGuards(RolesGuard)
+  // @Get("watchlist")
+  // @Roles(UserRole.ADMIN)
+  // async getWatchlist(@Request() req): Promise<GitRepository[]> {
+  //   return this.githubService.getWatchlist(req.user);
+  // }
 
   @UseGuards(RolesGuard)
   @Get("send-test-email")

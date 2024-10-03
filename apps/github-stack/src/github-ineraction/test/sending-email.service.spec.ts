@@ -9,6 +9,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { EmailData } from "../domain/interface/email.interface";
 import { of } from "rxjs";
 import { AxiosResponse } from "axios";
+import { Release } from "../domain/entity/release.entity";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -71,6 +72,10 @@ describe("SendingEmailService", () => {
   });
   describe("sendMonthSummary", () => {
     it("should send monthly summary to users", async () => {
+      const sendEmailSpy = jest
+        .spyOn(sendingEmailService, "sendEmailWithBackoff")
+        .mockRejectedValueOnce(undefined);
+
       const mockedRepository: GitRepository = {
         id: 1,
         name: "mockingRepository",
@@ -81,9 +86,9 @@ describe("SendingEmailService", () => {
         stargazers_count: 103,
         watchers_count: 6,
         forks_count: 10509,
-        latestRelease: "v1.7.19",
         repoId: 23,
         user: new User(),
+        release: [new Release()],
       };
 
       const mockUser = {
@@ -95,24 +100,37 @@ describe("SendingEmailService", () => {
         repositories: [mockedRepository],
       } as unknown as User;
 
-      const mockResponse = { data: "Email sent" };
+      const release = {
+        id: 1,
+        release: "HAHAH",
+        repository: mockedRepository,
+        release_date: new Date(),
+      } as Release;
 
-      mockHttpService.post.mockReturnValue(of(mockResponse));
-      const spySendingEmail = jest
-        .spyOn(sendingEmailService, "sendingEmail")
-        .mockResolvedValue("Email sent");
+      // const mockResponse = { data: "Email sent" };
+
+      // mockHttpService.post.mockReturnValue(of(mockResponse));
+      // const spySendingEmail = jest
+      //   .spyOn(sendingEmailService, "sendingEmail")
+      //   .mockResolvedValue("Email sent");
 
       await sendingEmailService.sendMonthSummary(mockUser);
 
-      const mockLetter = {
+      // const mockLetter = {
+      //   from: "aleksandr.zolotarev@abstract.rs",
+      //   to: mockUser.email,
+      //   subject: "Here is your month summary",
+      //   text: `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`,
+      // };
+
+      expect(sendEmailSpy).toHaveBeenCalledWith({
         from: "aleksandr.zolotarev@abstract.rs",
         to: mockUser.email,
         subject: "Here is your month summary",
-        text: `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`,
-      };
-
-      expect(spySendingEmail).toHaveBeenCalledWith(mockLetter);
-      expect(spySendingEmail).toHaveBeenCalled();
+        text: expect.stringContaining(
+          `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`
+        ).stringContaining("HAHAH"),
+      });
     });
   });
   describe("sendNewPassword", () => {

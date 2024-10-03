@@ -51,8 +51,8 @@ export class GitHubScheduler {
     const repositories = await this.gitRepository.find({ relations: ["user"] });
     for (const repo of repositories) {
       const release = await this.getLatestReliase(repo);
-      if (repo.latestRelease != release) {
-        repo.latestRelease = release;
+      if (repo.release != release) {
+        repo.release = release;
         this.gitRepository.save(repo);
         await this.sendingNotification(repo);
       }
@@ -68,7 +68,7 @@ export class GitHubScheduler {
       text: text,
     };
 
-    await this.sendingEmailService.sendingEmail(letter);
+    await this.sendingEmailService.sendEmailWithBackoff(letter);
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)
@@ -78,7 +78,7 @@ export class GitHubScheduler {
 
   @Cron("0 0 1 * *")
   async handleMonthSummary() {
-    const users = await this.userRep.find({ relations: ["repositories"] });
+    const users = await this.userRep.find({ relations: ["repositories", "repositories.releases"] });
     for (const user of users) {
       await this.sendingEmailService.sendMonthSummary(user);
     }

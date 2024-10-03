@@ -5,6 +5,8 @@ import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { release } from "os";
 
 @Injectable()
 export class SendingEmailService {
@@ -16,7 +18,9 @@ export class SendingEmailService {
   constructor(
     private readonly httpService: HttpService,
     @InjectRepository(User)
-    private readonly userRep: Repository<User>
+    private readonly userRep: Repository<User>,
+    @InjectRepository(GitRepository)
+    private readonly gitRep: Repository<GitRepository>
   ) {}
 
   private sleep(ms: number): Promise<void> {
@@ -58,18 +62,29 @@ export class SendingEmailService {
     }
   }
   async sendMonthSummary(user: User) {
-    const summary = user.repositories
-      .map((repo) => `- ${repo.name}`)
-      .join("\n");
+    const repositoriesSummary = [];
+    for (const repo of user.repositories) {
+      const repoSummary = `${repo.name}`;
+      const releaseSummary = repo.release
+        .map(
+          (release) =>
+            `This release is ${release.release}, released on ${release.release_date}`
+        )
+        .join("\n");
+
+      const summary = repoSummary + releaseSummary;
+      repositoriesSummary.push(summary);
+    }
+
     const subject = "Here is your month summary";
-    const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;
+    const text = `Hello, please, here is your monthly summary activity:\n\n${repositoriesSummary}`;
     const letter = {
       from: "aleksandr.zolotarev@abstract.rs",
       to: user.email,
       subject: subject,
       text: text,
     };
-    await this.sendingEmail(letter);
+    await this.sendEmailWithBackoff(letter);
   }
 
   async sendNewPassword(email: string, password: string) {
@@ -79,6 +94,6 @@ export class SendingEmailService {
       subject: "New Password",
       text: `Greetings! Here is your new password: ${password}`,
     };
-    await this.sendingEmail(letter);
+    await this.sendEmailWithBackoff(letter);
   }
 }
