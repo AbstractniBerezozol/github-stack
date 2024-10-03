@@ -9,6 +9,6 @@ export class AppController {
 
   @MessagePattern("emailSending")
   async sendAnEmail(emailDto: EmailDto): Promise<EmailDto> {
-     return this.appService.sendLetter(emailDto);
+    return this.appService.sendLetter(emailDto);
   }
 }

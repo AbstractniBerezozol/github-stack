@@ -6,8 +6,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
 import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
 import { ScheduleModule } from "@nestjs/schedule";
-import { GitrepositoryService } from "./github-ineraction/service/gitrepository.service";
-import { GithubGatewayGateway } from "./github-gateway/gateway-logic/github.gateway";
 @Module({
   imports: [
     GithubInteractionModule,
@@ -32,6 +30,6 @@ import { GithubGatewayGateway } from "./github-gateway/gateway-logic/github.gate
     ScheduleModule.forRoot(),
   ],
   controllers: [],
-  providers: [GitrepositoryService, GithubGatewayGateway],
+  providers: [],
 })
 export class AppModule {}
