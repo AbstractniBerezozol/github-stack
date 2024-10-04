@@ -1,15 +1,18 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-import { Repository } from "typeorm";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { User } from "../../users/domain/entity/user.entity";
-import { GitRepository } from "../domain/entity/repository.entity";
-import { GithubIneractionService } from "../service/github-ineraction.service";
-import { SearchBy } from "../domain/enum/repository.enum";
 import { HttpException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
 import { of } from "rxjs";
+import { Repository } from "typeorm";
+import { User } from "../../users/domain/entity/user.entity";
 import { UserRole } from "../../users/domain/enum/roles.enum";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { SearchBy } from "../domain/enum/repository.enum";
+import { GithubIneractionService } from "../service/github-ineraction.service";
+import { GitrepositoryService } from "../service/gitrepository.service";
+import { Release } from "../domain/entity/release.entity";
+import { get } from "http";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -38,12 +41,22 @@ const mockRepository = {
   createQueryBuilder: jest.fn(),
 };
 
+const mockGitServ = {
+  WatchlistQueryExample: jest.fn(),
+};
+
+const mockReleaseRepository = {
+  create: jest.fn(),
+};
+
 describe("GithubIneractionService", () => {
   let githubInteractionService: GithubIneractionService;
   let httpService: HttpService;
   let configService: ConfigService;
   let userRepostory: Repository<User>;
   let gitRepository: Repository<GitRepository>;
+  let gitServ: GitrepositoryService;
+  let releaseRep: Repository<Release>;
 
   beforeEach(async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -57,6 +70,11 @@ describe("GithubIneractionService", () => {
           provide: getRepositoryToken(GitRepository),
           useValue: mockRepository,
         },
+        { provide: GitrepositoryService, useValue: mockGitServ },
+        {
+          provide: getRepositoryToken(Release),
+          useValue: mockReleaseRepository,
+        },
       ],
     }).compile();
 
@@ -69,6 +87,8 @@ describe("GithubIneractionService", () => {
     gitRepository = module.get<Repository<GitRepository>>(
       getRepositoryToken(GitRepository)
     );
+    gitServ = module.get<GitrepositoryService>(GitrepositoryService);
+    releaseRep = module.get<Repository<Release>>(getRepositoryToken(Release));
   });
 
   afterEach(() => {
@@ -201,7 +221,7 @@ describe("GithubIneractionService", () => {
         stargazers_count: 0,
         watchers_count: 0,
         forks_count: 0,
-        release: []
+        release: [],
       };
       mockRepository.findOne.mockResolvedValue(mockRepositoryDelete);
 
@@ -218,4 +238,41 @@ describe("GithubIneractionService", () => {
     });
   });
 
+  describe("getWatchlist", () => {
+    it("should return the watchlist", async () => {
+      const mockedRepository: GitRepository = {
+        id: 1,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        repoId: 23,
+        user: new User(),
+        release: [new Release()],
+      };
+
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        roles: UserRole.USER,
+        repositories: [mockedRepository],
+      } as unknown as User;
+
+      jest
+        .spyOn(gitServ, "WatchlistQueryExample")
+        .mockResolvedValue(mockUser.repositories);
+
+      const result = await githubInteractionService.getWatchlist(mockUser);
+
+      expect(gitServ.WatchlistQueryExample).toHaveBeenCalledWith(mockUser);
+
+      expect(result).toEqual(mockUser.repositories);
+    });
+  });
 });

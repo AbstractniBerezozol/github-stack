@@ -18,6 +18,8 @@ export class GithubIneractionService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly gitServ: GitrepositoryService,
+    @InjectRepository(User)
+    private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
     private readonly gitRepository: Repository<GitRepository>,
     @InjectRepository(Release)

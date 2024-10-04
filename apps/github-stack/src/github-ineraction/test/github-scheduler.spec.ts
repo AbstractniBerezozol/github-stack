@@ -9,6 +9,7 @@ import { SendingEmailService } from "../service/sending-email.service";
 import { HttpService } from "@nestjs/axios";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
+import { Release } from "../domain/entity/release.entity";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -33,12 +34,17 @@ const mockGitRepository = {
   save: jest.fn(),
 };
 
+const mockReleaseRepository = {
+  create: jest.fn(),
+};
+
 describe("GithubScheduler", () => {
   let githubScheduler: GitHubScheduler;
   let sendingEmailService: SendingEmailService;
   let httpService: HttpService;
   let userRepository: Repository<User>;
   let gitRepository: Repository<GitRepository>;
+  let releaseRep: Repository<Release>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +57,10 @@ describe("GithubScheduler", () => {
         {
           provide: getRepositoryToken(GitRepository),
           useValue: mockGitRepository,
+        },
+        {
+          provide: getRepositoryToken(Release),
+          useValue: mockReleaseRepository,
         },
       ],
     }).compile();
@@ -141,7 +151,9 @@ describe("GithubScheduler", () => {
       } as unknown as GitRepository;
       mockUser.repositories = [mockedRepository];
 
-      jest.spyOn(gitRepository, "find").mockResolvedValue(mockUser.repositories);
+      jest
+        .spyOn(gitRepository, "find")
+        .mockResolvedValue(mockUser.repositories);
       jest
         .spyOn(githubScheduler, "getLatestReliase")
         .mockResolvedValue("v1.7.20");
@@ -193,7 +205,9 @@ describe("GithubScheduler", () => {
       };
       mockUser.repositories = [mockedRepository];
 
-      jest.spyOn(gitRepository, "find").mockResolvedValue(mockUser.repositories);
+      jest
+        .spyOn(gitRepository, "find")
+        .mockResolvedValue(mockUser.repositories);
       jest
         .spyOn(githubScheduler, "getLatestReliase")
         .mockResolvedValue("v1.7.19");
@@ -204,7 +218,6 @@ describe("GithubScheduler", () => {
         githubScheduler,
         "sendingNotification"
       );
-
 
       await githubScheduler.checkForUpdates();
 

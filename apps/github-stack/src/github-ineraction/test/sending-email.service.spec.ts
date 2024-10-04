@@ -20,10 +20,15 @@ const mockUserRepository = {
   find: jest.fn(),
 };
 
+const mockReleaseRepository = {
+  create: jest.fn(),
+};
+
 describe("SendingEmailService", () => {
   let httpService: HttpService;
   let sendingEmailService: SendingEmailService;
   let userRepostory: Repository<User>;
+  let releaseRep: Repository<Release>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,12 +36,17 @@ describe("SendingEmailService", () => {
         SendingEmailService,
         { provide: HttpService, useValue: mockHttpService },
         { provide: getRepositoryToken(User), useValue: mockUserRepository },
+        {
+          provide: getRepositoryToken(Release),
+          useValue: mockReleaseRepository,
+        },
       ],
     }).compile();
 
     sendingEmailService = module.get<SendingEmailService>(SendingEmailService);
     httpService = module.get<HttpService>(HttpService);
     userRepostory = module.get<Repository<User>>(getRepositoryToken(User));
+    releaseRep = module.get<Repository<Release>>(getRepositoryToken(Release));
   });
 
   afterEach(() => {
@@ -127,9 +137,11 @@ describe("SendingEmailService", () => {
         from: "aleksandr.zolotarev@abstract.rs",
         to: mockUser.email,
         subject: "Here is your month summary",
-        text: expect.stringContaining(
-          `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`
-        ).stringContaining("HAHAH"),
+        text: expect
+          .stringContaining(
+            `Hello, please, here is your monthly summary activity:\n\n- ${mockedRepository.name}`
+          )
+          .stringContaining("HAHAH"),
       });
     });
   });

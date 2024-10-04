@@ -25,8 +25,8 @@ describe("GitrepositoryService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GitrepositoryService,
-        { provide: getRepositoryToken(Repository), useValue: mockRepository },
-        { provide: getRepositoryToken(Repository), useValue: mockRepository },
+        { provide: getRepositoryToken(GitRepository), useValue: mockRepository },
+        { provide: getRepositoryToken(User), useValue: mockRepository },
       ],
     }).compile();
 
