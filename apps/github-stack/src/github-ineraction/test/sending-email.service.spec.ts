@@ -1,15 +1,16 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SendingEmailService } from "../service/sending-email.service";
 import { User } from "../../users/domain/entity/user.entity";
-import { GitRepository } from "../domain/entity/repository.entity";
 import { HttpService } from "@nestjs/axios";
 import { Repository } from "typeorm";
 import { UserRole } from "../../users/domain/enum/roles.enum";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { EmailData } from "../domain/interface/email.interface";
 import { of } from "rxjs";
-import { AxiosResponse } from "axios";
-import { Release } from "../domain/entity/release.entity";
+import {
+  Release as GitRepository,
+  Release,
+} from "../domain/entity/release.entity";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -20,14 +21,18 @@ const mockUserRepository = {
   find: jest.fn(),
 };
 
-const mockReleaseRepository = {
-  create: jest.fn(),
+const mockGitRepository = {
+  find: jest.fn(),
 };
 
+const mockReleaseRepository = {
+  find: jest.fn(),
+};
 describe("SendingEmailService", () => {
   let httpService: HttpService;
   let sendingEmailService: SendingEmailService;
-  let userRepostory: Repository<User>;
+  let userRep: Repository<User>;
+  let gitRep: Repository<GitRepository>;
   let releaseRep: Repository<Release>;
 
   beforeEach(async () => {
@@ -37,6 +42,10 @@ describe("SendingEmailService", () => {
         { provide: HttpService, useValue: mockHttpService },
         { provide: getRepositoryToken(User), useValue: mockUserRepository },
         {
+          provide: getRepositoryToken(GitRepository),
+          useValue: mockGitRepository,
+        },
+        {
           provide: getRepositoryToken(Release),
           useValue: mockReleaseRepository,
         },
@@ -45,8 +54,11 @@ describe("SendingEmailService", () => {
 
     sendingEmailService = module.get<SendingEmailService>(SendingEmailService);
     httpService = module.get<HttpService>(HttpService);
-    userRepostory = module.get<Repository<User>>(getRepositoryToken(User));
-    releaseRep = module.get<Repository<Release>>(getRepositoryToken(Release));
+    userRep = module.get<Repository<User>>(getRepositoryToken(User));
+    gitRep = module.get<Repository<GitRepository>>(
+      getRepositoryToken(GitRepository)
+    );
+    releaseRep = module.get<Repository<Release>>(getRepositoryToken(Release))
   });
 
   afterEach(() => {
@@ -86,6 +98,12 @@ describe("SendingEmailService", () => {
         .spyOn(sendingEmailService, "sendEmailWithBackoff")
         .mockRejectedValueOnce(undefined);
 
+      const mockRelease = {
+        id: 1,
+        release: "TypescriptRep",
+        release_date: new Date(),
+      } as unknown as Release;
+
       const mockedRepository: GitRepository = {
         id: 1,
         name: "mockingRepository",
@@ -98,7 +116,7 @@ describe("SendingEmailService", () => {
         forks_count: 10509,
         repoId: 23,
         user: new User(),
-        release: [new Release()],
+        release: [mockRelease],
       };
 
       const mockUser = {
@@ -109,13 +127,6 @@ describe("SendingEmailService", () => {
         roles: UserRole.USER,
         repositories: [mockedRepository],
       } as unknown as User;
-
-      const release = {
-        id: 1,
-        release: "HAHAH",
-        repository: mockedRepository,
-        release_date: new Date(),
-      } as Release;
 
       // const mockResponse = { data: "Email sent" };
 

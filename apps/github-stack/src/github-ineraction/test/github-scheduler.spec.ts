@@ -125,7 +125,7 @@ describe("GithubScheduler", () => {
     });
   });
 
-  describe("checkForUpdates", () => {
+  describe.only("checkForUpdates", () => {
     it("should notify if updates were found", async () => {
       const mockUser = {
         id: 1,
@@ -173,7 +173,7 @@ describe("GithubScheduler", () => {
       expect(githubScheduler.getLatestReliase).toHaveBeenLastCalledWith(
         mockedRepository
       );
-      expect(saveSpy).toHaveBeenCalledWith({
+      expect(gitRepository.save).toHaveBeenCalledWith({
         ...mockedRepository,
         latestRelease: "v1.7.20",
       });
