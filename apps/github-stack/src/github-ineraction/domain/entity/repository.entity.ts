@@ -41,12 +41,13 @@ export class GitRepository {
 
   @Column()
   forks_count: number;
-  
+
   @ManyToOne(() => User, (user) => user.repositories)
   user: User;
 
   @OneToMany(() => Release, (release) => release.repository, {
     cascade: true,
+    nullable: true,
   })
   release: Release[];
 }
