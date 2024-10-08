@@ -25,7 +25,10 @@ describe("GitrepositoryService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GitrepositoryService,
-        { provide: getRepositoryToken(GitRepository), useValue: mockRepository },
+        {
+          provide: getRepositoryToken(GitRepository),
+          useValue: mockRepository,
+        },
         { provide: getRepositoryToken(User), useValue: mockRepository },
       ],
     }).compile();
@@ -55,7 +58,7 @@ describe("GitrepositoryService", () => {
         forks_count: 10509,
         repoId: 23,
         user: new User(),
-        release: [],
+        releases: [],
       };
       const mockUser = {
         id: 1,

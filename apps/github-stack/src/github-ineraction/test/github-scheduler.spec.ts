@@ -92,7 +92,7 @@ describe("GithubScheduler", () => {
         forks_count: 10509,
         repoId: 23,
         user: new User(),
-        release: [],
+        releases: [],
       };
       const mockResponse = { data: { name: "v2.1.23" } };
       mockHttpService.get.mockReturnValue(of(mockResponse));
@@ -114,7 +114,7 @@ describe("GithubScheduler", () => {
         forks_count: 10509,
         repoId: 23,
         user: new User(),
-        release: [],
+        releases: [],
       };
       mockHttpService.get.mockReturnValue({
         toPromise: () => Promise.reject("API ERROR"),
@@ -125,7 +125,7 @@ describe("GithubScheduler", () => {
     });
   });
 
-  describe.only("checkForUpdates", () => {
+  describe("checkForUpdates", () => {
     it("should notify if updates were found", async () => {
       const mockUser = {
         id: 1,
@@ -201,7 +201,7 @@ describe("GithubScheduler", () => {
         forks_count: 10509,
         repoId: 23,
         user: mockUser,
-        release: [],
+        releases: [],
       };
       mockUser.repositories = [mockedRepository];
 

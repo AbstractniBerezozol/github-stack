@@ -101,7 +101,7 @@ export class GithubIneractionService {
         repository: newRepo,
       });
 
-      newRepo.release = [storeLastRelease];
+      newRepo.releases = [storeLastRelease];
 
       await this.gitRepository.save(newRepo);
 

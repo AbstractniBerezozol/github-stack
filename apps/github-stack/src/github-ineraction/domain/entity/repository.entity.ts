@@ -49,5 +49,5 @@ export class GitRepository {
     cascade: true,
     nullable: true,
   })
-  release: Release[];
+  releases: Release[];
 }

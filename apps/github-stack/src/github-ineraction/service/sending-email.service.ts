@@ -64,7 +64,7 @@ export class SendingEmailService {
     const repositoriesSummary = [];
     for (const repo of user.repositories) {
       const repoSummary = `${repo.name}`;
-      const releaseSummary = repo.release
+      const releaseSummary = repo.releases
         .map(
           (release) =>
             `This release is ${release.release}, released on ${release.release_date}`
