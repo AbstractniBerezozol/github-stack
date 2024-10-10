@@ -8,6 +8,7 @@ import { firstValueFrom, lastValueFrom } from "rxjs";
 import { Repository } from "typeorm";
 import { User } from "../../../users/domain/entity/user.entity";
 import { GitRepository } from "../entity/repository.entity";
+import { Release } from "../entity/release.entity";
 
 @Injectable()
 export class GitHubScheduler {
@@ -18,7 +19,9 @@ export class GitHubScheduler {
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
-    private readonly gitRepository: Repository<GitRepository>
+    private readonly gitRepository: Repository<GitRepository>,
+    @InjectRepository(Release)
+    private readonly releaseRep: Repository<Release>
   ) {}
 
   private readonly githubApiUrl = "https://api.github.com";
@@ -50,12 +53,19 @@ export class GitHubScheduler {
   async checkForUpdates() {
     const repositories = await this.gitRepository.find({ relations: ["user"] });
     for (const repo of repositories) {
-      const release = await this.getLatestReliase(repo);
-      if (repo.releases != release) {
-        repo.releases = release;
-        this.gitRepository.save(repo);
-        await this.sendingNotification(repo);
-      }
+      const latestRelease = await this.getLatestReliase(repo);
+      const releaseChecking = repo.releases.forEach((release) => {
+        if (release.release != latestRelease) {
+          this.releaseRep.create({
+            release: latestRelease,
+            release_date: new Date(),
+            repository: repo,
+          });
+          this.gitRepository.save(repo.releases);
+          this.sendingNotification(repo);
+          return releaseChecking;
+        }
+      });
     }
   }
   async sendingNotification(repo: GitRepository) {
