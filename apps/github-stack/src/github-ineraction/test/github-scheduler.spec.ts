@@ -36,6 +36,7 @@ const mockGitRepository = {
 
 const mockReleaseRepository = {
   create: jest.fn(),
+  save: jest.fn(),
 };
 
 describe("GithubScheduler", () => {
@@ -151,13 +152,24 @@ describe("GithubScheduler", () => {
       } as unknown as GitRepository;
       mockUser.repositories = [mockedRepository];
 
+      const mockRelease = {
+        release: 'Hahaha',
+        release_date: new Date(),
+        repository: mockedRepository
+      } as Release
+
+      mockedRepository.releases = [mockRelease];
+
       jest
         .spyOn(gitRepository, "find")
         .mockResolvedValue(mockUser.repositories);
       jest
         .spyOn(githubScheduler, "getLatestReliase")
         .mockResolvedValue("v1.7.20");
-      const saveSpy = jest
+      const createReleaseSpy = jest
+        .spyOn(releaseRep, "create")
+        .mockReturnValue(mockRelease);
+      const saveReleaseSpy = jest
         .spyOn(gitRepository, "save")
         .mockResolvedValue(mockedRepository);
 
@@ -173,10 +185,12 @@ describe("GithubScheduler", () => {
       expect(githubScheduler.getLatestReliase).toHaveBeenLastCalledWith(
         mockedRepository
       );
-      expect(gitRepository.save).toHaveBeenCalledWith({
-        ...mockedRepository,
-        latestRelease: "v1.7.20",
+      expect(createReleaseSpy).toHaveBeenCalledWith({
+        release: "1.7.20",
+        release_date: expect.any(Date),
+        repository: mockedRepository,
       });
+      expect(saveReleaseSpy).toHaveBeenCalledWith(mockedRepository.releases);
       expect(sendingNotificationSpy).toHaveBeenCalledWith(mockedRepository);
     });
 
@@ -211,9 +225,7 @@ describe("GithubScheduler", () => {
       jest
         .spyOn(githubScheduler, "getLatestReliase")
         .mockResolvedValue("v1.7.19");
-      const saveSpy = jest
-        .spyOn(gitRepository, "save")
-        .mockResolvedValue(mockedRepository);
+      const saveSpy = jest.spyOn(gitRepository, "save");
       const sendingNotificationSpy = jest.spyOn(
         githubScheduler,
         "sendingNotification"
