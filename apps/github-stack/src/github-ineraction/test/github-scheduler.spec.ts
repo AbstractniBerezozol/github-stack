@@ -73,6 +73,7 @@ describe("GithubScheduler", () => {
     gitRepository = module.get<Repository<GitRepository>>(
       getRepositoryToken(GitRepository)
     );
+    releaseRep = module.get<Repository<Release>>(getRepositoryToken(Release));
   });
 
   afterEach(() => {
@@ -153,10 +154,10 @@ describe("GithubScheduler", () => {
       mockUser.repositories = [mockedRepository];
 
       const mockRelease = {
-        release: 'Hahaha',
+        release: "Hahaha",
         release_date: new Date(),
-        repository: mockedRepository
-      } as Release
+        repository: mockedRepository,
+      } as Release;
 
       mockedRepository.releases = [mockRelease];
 
@@ -186,7 +187,7 @@ describe("GithubScheduler", () => {
         mockedRepository
       );
       expect(createReleaseSpy).toHaveBeenCalledWith({
-        release: "1.7.20",
+        release: "v1.7.20",
         release_date: expect.any(Date),
         repository: mockedRepository,
       });
