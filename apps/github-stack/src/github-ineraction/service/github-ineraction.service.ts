@@ -102,8 +102,11 @@ export class GithubIneractionService {
       });
 
       newRepo.releases = [storeLastRelease];
+      const savedRepo = await this.gitRepository.save(newRepo);
 
-      await this.gitRepository.save(newRepo);
+      storeLastRelease.repository = savedRepo;
+
+      this.releasesRepository.save(storeLastRelease);
 
       return this.gitRepository.find({
         where: { user: { username: user.username } },
