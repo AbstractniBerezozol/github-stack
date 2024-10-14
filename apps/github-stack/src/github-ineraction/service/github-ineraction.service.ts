@@ -88,25 +88,27 @@ export class GithubIneractionService {
         full_name: repo.full_name,
         html_url: repo.html_url,
         description: repo.description,
-        language: repo.language,
+        language: repo.language || "en",
         stargazers_count: repo.stargazers_count,
         watchers_count: repo.watchers_count,
         forks_count: repo.forks_count,
         user,
       });
-
-      const storeLastRelease = this.releasesRepository.create({
-        release: repo.latestRelease,
-        release_date: new Date(),
-        repository: newRepo,
-      });
-
-      newRepo.releases = [storeLastRelease];
       const savedRepo = await this.gitRepository.save(newRepo);
 
-      storeLastRelease.repository = savedRepo;
+      if (repo.latestRelease != null && repo.latestRelease != undefined) {
+        const storeLastRelease = this.releasesRepository.create({
+          release: repo.latestRelease || "No release yet",
+          release_date: new Date(),
+          repository: newRepo,
+        });
 
-      this.releasesRepository.save(storeLastRelease);
+        newRepo.releases = [storeLastRelease];
+
+        storeLastRelease.repository = savedRepo;
+
+        this.releasesRepository.save(storeLastRelease);
+      }
 
       return this.gitRepository.find({
         where: { user: { username: user.username } },

@@ -1,9 +1,12 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway } from "@nestjs/websockets";
+import { EmailData } from "../../../../github-stack/src/github-ineraction/domain/interface/email.interface";
+import { AppController } from "../../app.controller";
 
 @WebSocketGateway()
 export class EmailGateway {
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
+  constructor(private readonly emailController: AppController) {}
+  @SubscribeMessage("letter")
+  handleMessage(client: any, payload: EmailData) {
+    this.emailController.sendAnEmail(payload);
   }
 }
