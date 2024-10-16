@@ -1,11 +1,12 @@
 import { HttpService } from "@nestjs/axios";
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { EmailData } from "../domain/interface/email.interface";
 import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 import { GitRepository } from "../domain/entity/repository.entity";
+import { ClientProxy } from "@nestjs/microservices";
 
 @Injectable()
 export class SendingEmailService {
@@ -15,6 +16,7 @@ export class SendingEmailService {
   private maxDelay = 16000;
 
   constructor(
+    @Inject("EMAIL_SERVICE") private readonly emailService: ClientProxy,
     private readonly httpService: HttpService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
@@ -40,7 +42,7 @@ export class SendingEmailService {
     let attempts = 0;
     while (attempts <= this.maxAttempts) {
       try {
-        await this.sendingEmail(email);
+        this.emailService.emit({ cmd: "send-email" }, email);
         this.logger.log("Email sent");
         return;
       } catch (error) {

@@ -6,7 +6,7 @@ import { MessagePattern } from "@nestjs/microservices";
 @Injectable()
 export class AppService {
   constructor(private readonly emailService: MailerService) {}
-
+  @MessagePattern({ cmd: "send-email" })
   async sendLetter(emailDto: EmailDto) {
     const from = emailDto.from;
     const to = emailDto.to;

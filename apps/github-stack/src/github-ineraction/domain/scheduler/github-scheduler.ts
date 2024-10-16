@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { SendingEmailService } from "../../service/sending-email.service";
 import { HttpService } from "@nestjs/axios";
@@ -9,6 +9,7 @@ import { Repository } from "typeorm";
 import { User } from "../../../users/domain/entity/user.entity";
 import { GitRepository } from "../entity/repository.entity";
 import { Release } from "../entity/release.entity";
+import { ClientProxy } from "@nestjs/microservices";
 
 @Injectable()
 export class GitHubScheduler {

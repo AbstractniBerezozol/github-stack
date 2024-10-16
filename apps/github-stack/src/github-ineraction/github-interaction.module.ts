@@ -11,9 +11,20 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { Release } from "./domain/entity/release.entity";
 import { SendingEmailService } from "./service/sending-email.service";
 import { GitrepositoryService } from "./service/gitrepository.service";
+import { ClientsModule, Transport } from "@nestjs/microservices";
 
 @Module({
   imports: [
+    ClientsModule.register([
+      {
+        name: "EMAIL_SERVICE",
+        transport: Transport.TCP,
+        options: {
+          host: "127.0.0.1",
+          port: 3001,
+        },
+      },
+    ]),
     TypeOrmModule.forFeature([User, GitRepository, Release]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
