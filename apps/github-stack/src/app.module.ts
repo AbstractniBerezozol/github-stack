@@ -6,8 +6,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
 import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { ClientsModule, Transport } from "@nestjs/microservices";
 @Module({
   imports: [
+   
     GithubInteractionModule,
     UsersModule,
     AuthModule,

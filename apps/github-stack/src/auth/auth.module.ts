@@ -30,6 +30,7 @@ import { GithubInteractionModule } from "../github-ineraction/github-interaction
     UsersModule,
     TypeOrmModule.forFeature([User, GitRepository]),
     HttpModule,
+    GithubInteractionModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -37,9 +38,7 @@ import { GithubInteractionModule } from "../github-ineraction/github-interaction
     JwtStrategy,
     UsersService,
     JwtRefreshStrategy,
-    SendingEmailService,
     LocalStrategy,
-    GithubInteractionModule,
   ],
 })
 export class AuthModule {}

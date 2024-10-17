@@ -43,5 +43,6 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     GitHubScheduler,
     SendingEmailService,
   ],
+  exports: [SendingEmailService],
 })
 export class GithubInteractionModule {}

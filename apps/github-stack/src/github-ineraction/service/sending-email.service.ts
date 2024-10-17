@@ -16,7 +16,8 @@ export class SendingEmailService {
   private maxDelay = 16000;
 
   constructor(
-    @Inject("EMAIL_SERVICE") private readonly emailService: ClientProxy,
+    @Inject("EMAIL_SERVICE")
+    private readonly emailService: ClientProxy,
     private readonly httpService: HttpService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
