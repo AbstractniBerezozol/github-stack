@@ -15,6 +15,7 @@ import { HttpModule, HttpService } from "@nestjs/axios";
         transport: {
           host: configService.get<string>("EMAIL_HOST"),
           port: configService.get<number>("PORTS_NUMBER"),
+          secure: true,
           auth: {
             user: configService.get<string>("EMAIL_USERNAME"),
             pass: configService.get<string>("EMAIL_PASSWORD"),

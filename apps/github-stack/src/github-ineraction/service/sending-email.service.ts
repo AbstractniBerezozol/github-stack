@@ -7,6 +7,7 @@ import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { ClientProxy } from "@nestjs/microservices";
+import { WebSocketServer } from "@nestjs/websockets";
 
 @Injectable()
 export class SendingEmailService {
@@ -14,6 +15,8 @@ export class SendingEmailService {
   private maxAttempts = 5;
   private defaultDelay = 1000;
   private maxDelay = 16000;
+  @WebSocketServer()
+  private server;
 
   constructor(
     @Inject("EMAIL_SERVICE")
@@ -43,7 +46,7 @@ export class SendingEmailService {
     let attempts = 0;
     while (attempts <= this.maxAttempts) {
       try {
-        this.emailService.emit( "send-email" , email);
+        this.server.emit( "sending-letter" , email);
         this.logger.log("Email sent");
         return;
       } catch (error) {

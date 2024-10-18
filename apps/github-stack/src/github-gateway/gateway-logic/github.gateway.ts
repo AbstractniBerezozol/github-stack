@@ -1,9 +1,18 @@
-import { SubscribeMessage, WebSocketGateway } from "@nestjs/websockets";
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from "@nestjs/websockets";
+import { Server } from "http";
+import { EmailData } from "../../github-ineraction/domain/interface/email.interface";
 
-@WebSocketGateway(3003)
+@WebSocketGateway({ cors: { origin: "*" } })
 export class GithubGateway {
-  @SubscribeMessage("message")
-  handleMessage(client: any, payload: any): string {
-    return "Hello world!";
+  @WebSocketServer()
+  server: Server;
+  @SubscribeMessage("sending-letter")
+  handleMessage(@MessageBody() email: EmailData) {
+    this.server.emit("send-email", email);
   }
 }
