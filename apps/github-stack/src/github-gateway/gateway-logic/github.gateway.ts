@@ -13,6 +13,6 @@ export class GithubGateway {
   server: Server;
   @SubscribeMessage("sending-letter")
   handleMessage(@MessageBody() email: EmailData) {
-    this.server.emit("send-email", email);
+    return this.server.emit("send-email", email);
   }
 }

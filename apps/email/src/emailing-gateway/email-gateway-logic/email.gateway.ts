@@ -7,6 +7,6 @@ export class EmailGateway {
   constructor(private readonly emailController: AppController) {}
   @SubscribeMessage("send-email")
   handleMessage(payload: EmailData) {
-    this.emailController.sendAnEmail(payload);
+   return this.emailController.sendAnEmail(payload);
   }
 }
