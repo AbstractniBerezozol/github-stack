@@ -8,10 +8,10 @@ import { HttpModule, HttpService } from "@nestjs/axios";
 @Module({
   imports: [
     HttpModule,
-    ConfigModule.forRoot({ envFilePath: "env", isGlobal: true }),
+    ConfigModule.forRoot({ envFilePath: ".env", isGlobal: true }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         transport: {
           host: configService.get<string>("EMAIL_HOST"),
           port: configService.get<number>("PORTS_NUMBER"),

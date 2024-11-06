@@ -48,6 +48,7 @@ export class GitHubScheduler {
       console.log(
         `For repository ${gitRepository.full_name} latest reliase is not found`
       );
+      console.error(error);
     }
   }
 

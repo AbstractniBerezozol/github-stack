@@ -82,6 +82,7 @@ export class GithubIneractionService {
       );
 
       const repo = response.data;
+      this.gitServ.CheckForSameRepositories(repo.id);
       const newRepo = this.gitRepository.create({
         repoId: repo.id,
         name: repo.name,
@@ -109,7 +110,7 @@ export class GithubIneractionService {
 
         this.releasesRepository.save(storeLastRelease);
       }
-
+      this.gitServ.CheckForSameRepositories(newRepo);
       return this.gitRepository.find({
         where: { user: { username: user.username } },
       });
