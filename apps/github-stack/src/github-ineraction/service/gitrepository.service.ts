@@ -10,7 +10,7 @@ export class GitrepositoryService {
     @InjectRepository(GitRepository)
     private readonly gitRepository: Repository<GitRepository>
   ) {}
-  async WatchlistQueryExample(user: any) {
+  async watchlistQueryExample(user: any) {
     return this.gitRepository
       .createQueryBuilder("git_repository")
       .innerJoin("git_repository.user", "user")
@@ -18,7 +18,7 @@ export class GitrepositoryService {
       .getMany();
   }
 
-  async CheckForSameRepositories(gitRep: any) {
+  async checkForSameRepositories(gitRep: any) {
     if (this.gitRepository.find({ where: gitRep.repoId })) {
       console.error("Already added!");
     }

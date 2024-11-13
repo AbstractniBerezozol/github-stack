@@ -82,7 +82,7 @@ export class GithubIneractionService {
       );
 
       const repo = response.data;
-      this.gitServ.CheckForSameRepositories(repo.id);
+      this.gitServ.checkForSameRepositories(repo.id);
       const newRepo = this.gitRepository.create({
         repoId: repo.id,
         name: repo.name,
@@ -110,7 +110,7 @@ export class GithubIneractionService {
 
         this.releasesRepository.save(storeLastRelease);
       }
-      this.gitServ.CheckForSameRepositories(newRepo);
+      this.gitServ.checkForSameRepositories(newRepo);
       return this.gitRepository.find({
         where: { user: { username: user.username } },
       });
@@ -131,6 +131,6 @@ export class GithubIneractionService {
   }
 
   async getWatchlist(user: User): Promise<GitRepository[]> {
-    return this.gitServ.WatchlistQueryExample(user);
+    return this.gitServ.watchlistQueryExample(user);
   }
 }

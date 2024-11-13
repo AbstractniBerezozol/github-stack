@@ -79,7 +79,7 @@ describe("GitrepositoryService", () => {
         .spyOn(gitRepository, "createQueryBuilder")
         .mockReturnValue(queryBuilder);
 
-      const result = await service.WatchlistQueryExample(mockUser);
+      const result = await service.watchlistQueryExample(mockUser);
 
       expect(gitRepository.createQueryBuilder).toHaveBeenCalledWith(
         "git_repository"

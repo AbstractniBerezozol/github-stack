@@ -270,7 +270,7 @@ describe("GithubIneractionService", () => {
 
       const result = await githubInteractionService.getWatchlist(mockUser);
 
-      expect(gitServ.WatchlistQueryExample).toHaveBeenCalledWith(mockUser);
+      expect(gitServ.watchlistQueryExample).toHaveBeenCalledWith(mockUser);
 
       expect(result).toEqual(mockUser.repositories);
     });

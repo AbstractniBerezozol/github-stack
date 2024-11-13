@@ -8,10 +8,10 @@ import { Server } from "http";
 import { EmailData } from "../../github-ineraction/domain/interface/email.interface";
 
 @WebSocketGateway({ cors: { origin: "*" } })
-export class GithubGateway {
+export class EmailMessagingService {
   @WebSocketServer()
   server: Server;
-  @SubscribeMessage("sending-letter")
+  @SubscribeMessage("sendMessage")
   handleMessage(@MessageBody() email: EmailData) {
     return this.server.emit("send-email", email);
   }
