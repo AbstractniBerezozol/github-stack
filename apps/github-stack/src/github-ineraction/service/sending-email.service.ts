@@ -46,7 +46,7 @@ export class SendingEmailService {
     let attempts = 0;
     while (attempts <= this.maxAttempts) {
       try {
-        this.server.emit( "sendMessage" , email);
+        this.server.emit( "sending-letter" , email);
         this.logger.log("Email sent");
         return;
       } catch (error) {

@@ -1,15 +1,15 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { EmailMessagingService } from "../gateway-logic/github.gateway";
+import { GithubGateway } from "../gateway-logic/github.gateway";
 
 describe("GithubGatewayGateway", () => {
-  let gateway: EmailMessagingService;
+  let gateway: GithubGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmailMessagingService],
+      providers: [GithubGateway],
     }).compile();
 
-    gateway = module.get<EmailMessagingService>(EmailMessagingService);
+    gateway = module.get<GithubGateway>(GithubGateway);
   });
 
   it("should be defined", () => {

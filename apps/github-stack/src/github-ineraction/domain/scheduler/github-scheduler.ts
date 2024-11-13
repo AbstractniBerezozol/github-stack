@@ -16,7 +16,7 @@ export class GitHubScheduler {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    private readonly emailService: SendingEmailService,
+    private readonly sendingEmailService: SendingEmailService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
@@ -64,12 +64,12 @@ export class GitHubScheduler {
             repository: repo,
           });
           this.gitRepository.save(repo.releases);
-          this.sendNotification(repo);
+          this.sendingNotification(repo);
         }
       });
     }
   }
-  async sendNotification(repo: GitRepository) {
+  async sendingNotification(repo: GitRepository) {
     const subject = "Here is update from your list!";
     const text = `Hello, it is update ${repo.name} from your Watchlist!!!`;
     const letter = {
@@ -79,7 +79,7 @@ export class GitHubScheduler {
       text: text,
     };
 
-    await this.emailService.sendEmailWithBackoff(letter);
+    await this.sendingEmailService.sendEmailWithBackoff(letter);
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)
@@ -93,7 +93,7 @@ export class GitHubScheduler {
       relations: ["repositories", "repositories.releases"],
     });
     for (const user of users) {
-      await this.emailService.sendMonthSummary(user);
+      await this.sendingEmailService.sendMonthSummary(user);
     }
   }
 }
