@@ -14,6 +14,7 @@ const mockRepository = {
   remove: jest.fn(),
   findOneOrFail: jest.fn(),
   createQueryBuilder: jest.fn(),
+  where: jest.fn(),
 };
 
 describe("GitrepositoryService", () => {
@@ -44,7 +45,7 @@ describe("GitrepositoryService", () => {
     expect(service).toBeDefined();
   });
 
-  describe("getWatchliist", () => {
+  describe("WatchlistQueryExample", () => {
     it("should return user watchlist", async () => {
       const mockedRepository: GitRepository = {
         id: 1,
@@ -94,6 +95,102 @@ describe("GitrepositoryService", () => {
       );
       expect(queryBuilder.getMany).toHaveBeenCalled();
       expect(result).toEqual(mockedRepository);
+    });
+  });
+
+  describe("checkForSameRepositories", () => {
+    it("should log an error if repository is already added", async () => {
+      const mockedRepository: GitRepository = {
+        id: 1,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        repoId: 23,
+        user: new User(),
+        releases: [],
+      };
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+      gitRepository.find = jest.fn().mockResolvedValue([
+        {
+          id: 1,
+          name: "mockingRepository",
+          full_name: "alexander/mockingRepository",
+          html_url: "https://github.com/alexander/mockingRepository",
+          description: "Here is test repository for something incredible",
+          language: "TypeScript",
+          stargazers_count: 103,
+          watchers_count: 6,
+          forks_count: 10509,
+          repoId: 23,
+          user: new User(),
+          releases: [],
+        },
+      { id: 2,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        repoId: 23,
+        user: new User(),
+        releases: [],}
+      ]);
+
+      await service.checkForSameRepositories(mockedRepository);
+
+      expect(gitRepository.find).toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalledWith("Already added!");
+
+      consoleSpy.mockRestore();
+    });
+
+    it("should not log an error if repository is not added already", async () => {
+      const mockedRepository: GitRepository = {
+        id: 1,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        repoId: 23,
+        user: new User(),
+        releases: [],
+      };
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+      gitRepository.find = jest.fn().mockResolvedValue([
+        {
+          id: 2,
+          name: "mockingRepository",
+          full_name: "alexander/mockingRepository",
+          html_url: "https://github.com/alexander/mockingRepository",
+          description: "Here is test repository for something incredible",
+          language: "TypeScript",
+          stargazers_count: 103,
+          watchers_count: 6,
+          forks_count: 10509,
+          repoId: 23,
+          user: new User(),
+          releases: [],
+        },
+      ]);
+
+      await service.checkForSameRepositories(mockedRepository);
+
+      expect(gitRepository.find).toHaveBeenCalledWith();
+      expect(consoleSpy).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
     });
   });
 });

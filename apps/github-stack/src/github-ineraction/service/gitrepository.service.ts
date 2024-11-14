@@ -18,8 +18,12 @@ export class GitrepositoryService {
       .getMany();
   }
 
-  async checkForSameRepositories(gitRep: any) {
-    if (this.gitRepository.find({ where: gitRep.repoId })) {
+  async checkForSameRepositories(gitRepId: any) {
+    const repositories = await this.gitRepository.find();
+    const addedRepository = repositories.some(
+      (repo) => repo.id === gitRepId.repoId
+    );
+    if (addedRepository) {
       console.error("Already added!");
     }
   }

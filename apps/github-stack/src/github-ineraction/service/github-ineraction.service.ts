@@ -97,9 +97,21 @@ export class GithubIneractionService {
       });
       const savedRepo = await this.gitRepository.save(newRepo);
 
-      if (repo.latestRelease != null && repo.latestRelease != undefined) {
+      if (repo.latestRelease == null && repo.latestRelease == undefined) {
         const storeLastRelease = this.releasesRepository.create({
-          release: repo.latestRelease || "No release yet",
+          release: "No release yet",
+          release_date: new Date(),
+          repository: newRepo,
+        });
+
+        newRepo.releases = [storeLastRelease];
+
+        storeLastRelease.repository = savedRepo;
+
+        this.releasesRepository.save(storeLastRelease);
+      } else {
+        const storeLastRelease = this.releasesRepository.create({
+          release: repo.latestRelease,
           release_date: new Date(),
           repository: newRepo,
         });

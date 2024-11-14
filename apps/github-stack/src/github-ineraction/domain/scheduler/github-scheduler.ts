@@ -56,14 +56,19 @@ export class GitHubScheduler {
     const repositories = await this.gitRepository.find({ relations: ["user"] });
     for (const repo of repositories) {
       const latestRelease = await this.getLatestReliase(repo);
+      const listOfReleases = repo.releases;
+      // const sortedListOfReleases = listOfReleases.sort();
       repo.releases?.forEach((release) => {
-        if (release.release != latestRelease) {
-          this.releaseRep.create({
+        if (
+          // sortedListOfReleases[sortedListOfReleases.length - 1] &&
+          release.release != latestRelease
+        ) {
+          const lateRelease = this.releaseRep.create({
             release: latestRelease,
             release_date: new Date(),
             repository: repo,
           });
-          this.gitRepository.save(repo.releases);
+          this.releaseRep.save(lateRelease);
           this.sendNotification(repo);
         }
       });

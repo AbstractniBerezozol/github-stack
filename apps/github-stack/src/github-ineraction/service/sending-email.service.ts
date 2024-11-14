@@ -19,8 +19,6 @@ export class SendingEmailService {
   private server;
 
   constructor(
-    @Inject("EMAIL_SERVICE")
-    private readonly emailService: ClientProxy,
     private readonly httpService: HttpService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,

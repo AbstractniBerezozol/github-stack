@@ -15,16 +15,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: "EMAIL_SERVICE",
-        transport: Transport.TCP,
-        options: {
-          host: "127.0.0.1",
-          port: 3001,
-        },
-      },
-    ]),
+   
     TypeOrmModule.forFeature([User, GitRepository, Release]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
