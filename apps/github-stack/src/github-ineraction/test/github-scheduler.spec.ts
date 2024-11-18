@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { User } from "../../users/domain/entity/user.entity";
 import { UserRole } from "../../users/domain/enum/roles.enum";
 import { GitHubScheduler } from "../domain/scheduler/github-scheduler";
-import { of } from "rxjs";
+import { of, throwError } from "rxjs";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { Repository } from "typeorm";
 import { SendingEmailService } from "../service/sending-email.service";
@@ -11,6 +11,8 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { Release } from "../domain/entity/release.entity";
 import { scheduler } from "timers/promises";
+import { GitrepositoryService } from "../service/gitrepository.service";
+import { EmailData } from "../domain/interface/email.interface";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -40,6 +42,12 @@ const mockReleaseRepository = {
   save: jest.fn(),
 };
 
+const mockGitServ = {
+  checkForSameRepositories: jest.fn(),
+  checkForReleaseStored: jest.fn(),
+  checkForDefaultRelease: jest.fn(),
+};
+
 describe("GithubScheduler", () => {
   let githubScheduler: GitHubScheduler;
   let sendingEmailService: SendingEmailService;
@@ -47,6 +55,7 @@ describe("GithubScheduler", () => {
   let userRepository: Repository<User>;
   let gitRepository: Repository<GitRepository>;
   let releaseRep: Repository<Release>;
+  let gitServ: GitrepositoryService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -63,6 +72,10 @@ describe("GithubScheduler", () => {
         {
           provide: getRepositoryToken(Release),
           useValue: mockReleaseRepository,
+        },
+        {
+          provide: GitrepositoryService,
+          useValue: mockGitServ,
         },
       ],
     }).compile();
@@ -104,7 +117,7 @@ describe("GithubScheduler", () => {
 
       expect(httpService.get).toHaveBeenCalledWith(
         "https://api.github.com/repos/alexander/mockingRepository/releases/latest",
-        { headers: { Authorization: "token mockToken" } }
+        { headers: { Authorization: "token mocked_github_token" } }
       );
     });
 
@@ -123,12 +136,18 @@ describe("GithubScheduler", () => {
         user: new User(),
         releases: [],
       };
-      mockHttpService.get.mockReturnValue({
-        toPromise: () => Promise.reject("API ERROR"),
-      });
+      mockHttpService.get.mockReturnValue(
+        throwError(() => new Error("Not Found"))
+      );
+      const consoleSpy = jest.spyOn(console, "log").mockImplementation();
 
-      const result = await githubScheduler.getLatestReliase(mockRepository);
-      expect(result).toBeUndefined();
+      const latestRelease =
+        await githubScheduler.getLatestReliase(mockRepository);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining("latest reliase is not found")
+      );
+      expect(latestRelease).toBeUndefined();
     });
   });
 
@@ -179,25 +198,27 @@ describe("GithubScheduler", () => {
         .spyOn(gitRepository, "save")
         .mockResolvedValue(mockedRepository);
 
-      const sendingNotificationSpy = jest
-        .spyOn(githubScheduler, "sendNotification")
-        .mockResolvedValue();
+      jest.spyOn(githubScheduler, "sendNotification").mockImplementation();
 
       await githubScheduler.checkForUpdates();
 
       expect(gitRepository.find).toHaveBeenCalledWith({
-        relations: ["user"],
+        relations: ["user", "releases"],
       });
       expect(githubScheduler.getLatestReliase).toHaveBeenLastCalledWith(
         mockedRepository
       );
-      expect(createReleaseSpy).toHaveBeenCalledWith({
-        release: "v1.7.20",
-        release_date: expect.any(Date),
-        repository: mockedRepository,
-      });
-      expect(saveReleaseSpy).toHaveBeenCalledWith(mockedRepository.releases);
-      expect(sendingNotificationSpy).toHaveBeenCalledWith(mockedRepository);
+      expect(gitServ.checkForReleaseStored).toHaveBeenCalledWith(
+        mockedRepository.releases,
+        mockedRepository
+      );
+      expect(createReleaseSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ release: "v1.7.20" })
+      );
+      expect(saveReleaseSpy).toHaveBeenCalled();
+      expect(githubScheduler.sendNotification).toHaveBeenCalledWith(
+        mockedRepository
+      );
     });
 
     it("should not notify if updates were not found", async () => {
@@ -250,20 +271,8 @@ describe("GithubScheduler", () => {
     });
   });
 
-  describe("handleCron", () => {
-    it("should call checkForUpdates when the cron is triggered", async () => {
-      const checkForUpdatesSpy = jest
-        .spyOn(githubScheduler, "checkForUpdates")
-        .mockResolvedValue();
-
-      await githubScheduler.handleCron();
-
-      expect(checkForUpdatesSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe("handleMonthSummary", () => {
-    it("should send the monthly summary via SendingEmailService when cron is triggered", async () => {
+  describe("sendNotification", () => {
+    it("should send Notification email if repository update", async () => {
       const mockUser = {
         id: 1,
         username: "Coco",
@@ -272,6 +281,82 @@ describe("GithubScheduler", () => {
         roles: ["default"],
         repositories: [],
       } as unknown as User;
+      const mockedRepository: GitRepository = {
+        id: 1,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        repoId: 23,
+        user: mockUser,
+        releases: [],
+      };
+
+      const emailData: EmailData = {
+        from: "aleksandr.zolotarev@abstract.rs",
+        to: mockedRepository.user.email,
+        subject: "Here is update from your list!",
+        text: "Hello, it is update mockingRepository from your Watchlist!!!",
+      };
+
+      jest
+        .spyOn(sendingEmailService, "sendEmailWithBackoff")
+        .mockResolvedValue(emailData);
+
+      await githubScheduler.sendNotification(mockedRepository);
+
+      expect(sendingEmailService.sendEmailWithBackoff).toHaveBeenCalledWith(
+        emailData
+      );
+    });
+  });
+
+  describe("handleCron", () => {
+    it("should call checkForUpdates when the cron is triggered", async () => {
+      jest.spyOn(githubScheduler, "checkForUpdates").mockImplementation();
+
+      await githubScheduler.handleCron();
+
+      expect(githubScheduler.checkForUpdates).toHaveBeenCalled();
+    });
+  });
+
+  describe("handleMonthSummary", () => {
+    it("should send the monthly summary via SendingEmailService when cron is triggered", async () => {
+      const mockRelease = {
+        id: 1,
+        release: "TypescriptRep",
+        release_date: new Date(),
+      } as unknown as Release;
+
+      const mockedRepository: GitRepository = {
+        id: 1,
+        name: "mockingRepository",
+        full_name: "alexander/mockingRepository",
+        html_url: "https://github.com/alexander/mockingRepository",
+        description: "Here is test repository for something incredible",
+        language: "TypeScript",
+        stargazers_count: 103,
+        watchers_count: 6,
+        forks_count: 10509,
+        repoId: 23,
+        releases: [mockRelease],
+        user: new User(),
+      };
+
+      const mockUser = {
+        id: 1,
+        username: "Coco",
+        password: "Coco123",
+        email: "Coco@singimail.rs",
+        repositories: [mockedRepository],
+      } as unknown as User;
+
+      mockedRepository.user = mockUser;
       jest.spyOn(userRepository, "find").mockResolvedValue([mockUser]);
 
       await githubScheduler.handleMonthSummary();
