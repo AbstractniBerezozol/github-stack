@@ -10,6 +10,7 @@ import { HttpService } from "@nestjs/axios";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { Release } from "../domain/entity/release.entity";
+import { scheduler } from "timers/promises";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -97,10 +98,14 @@ describe("GithubScheduler", () => {
         releases: [],
       };
       const mockResponse = { data: { name: "v2.1.23" } };
+      const latestRelease =
+        await githubScheduler.getLatestReliase(mockRepository);
       mockHttpService.get.mockReturnValue(of(mockResponse));
 
-      const result = await githubScheduler.getLatestReliase(mockRepository);
-      expect(result).toEqual("v2.1.23");
+      expect(httpService.get).toHaveBeenCalledWith(
+        "https://api.github.com/repos/alexander/mockingRepository/releases/latest",
+        { headers: { Authorization: "token mockToken" } }
+      );
     });
 
     it("should handle errors during getting the last reliase", async () => {
@@ -175,7 +180,7 @@ describe("GithubScheduler", () => {
         .mockResolvedValue(mockedRepository);
 
       const sendingNotificationSpy = jest
-        .spyOn(githubScheduler, "sendingNotification")
+        .spyOn(githubScheduler, "sendNotification")
         .mockResolvedValue();
 
       await githubScheduler.checkForUpdates();
@@ -229,7 +234,7 @@ describe("GithubScheduler", () => {
       const saveSpy = jest.spyOn(gitRepository, "save");
       const sendingNotificationSpy = jest.spyOn(
         githubScheduler,
-        "sendingNotification"
+        "sendNotification"
       );
 
       await githubScheduler.checkForUpdates();

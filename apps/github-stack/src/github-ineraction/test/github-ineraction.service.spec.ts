@@ -42,11 +42,13 @@ const mockRepository = {
 };
 
 const mockGitServ = {
-  WatchlistQueryExample: jest.fn(),
+  watchlistQueryExample: jest.fn(),
+  checkForSameRepositories: jest.fn(),
 };
 
 const mockReleaseRepository = {
   create: jest.fn(),
+  save: jest.fn(),
 };
 
 describe("GithubIneractionService", () => {
@@ -172,6 +174,8 @@ describe("GithubIneractionService", () => {
         mockUser
       );
       expect(result.length).toBeGreaterThan(0);
+      expect(gitServ.checkForSameRepositories).toHaveBeenCalled();
+      expect(mockRepository.create).toHaveBeenCalled();
       expect(mockRepository.save).toHaveBeenCalled();
     });
     it("should handle errors during repos adding", async () => {
@@ -226,6 +230,9 @@ describe("GithubIneractionService", () => {
       mockRepository.findOne.mockResolvedValue(mockRepositoryDelete);
 
       await githubInteractionService.deleteRepository(mockRepoId);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { repoId: mockRepoId },
+      });
       expect(mockRepository.remove).toHaveBeenCalled();
     });
     it("should throw an erroe if repository is not found", async () => {
@@ -265,7 +272,7 @@ describe("GithubIneractionService", () => {
       } as unknown as User;
 
       jest
-        .spyOn(gitServ, "WatchlistQueryExample")
+        .spyOn(gitServ, "watchlistQueryExample")
         .mockResolvedValue(mockUser.repositories);
 
       const result = await githubInteractionService.getWatchlist(mockUser);

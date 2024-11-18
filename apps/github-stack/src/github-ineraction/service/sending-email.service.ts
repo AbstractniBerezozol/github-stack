@@ -29,7 +29,7 @@ export class SendingEmailService {
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  async sendingEmail(data: EmailData): Promise<string> {
+  async sendEmail(data: EmailData): Promise<string> {
     try {
       const url = "http://localhost:3001/sendingTestingEmail/messageRequest";
       const response = this.httpService.post(url, data);
@@ -44,7 +44,7 @@ export class SendingEmailService {
     let attempts = 0;
     while (attempts <= this.maxAttempts) {
       try {
-        this.server.emit( "sendMessage" , email);
+        this.server.emit("sendMessage", email);
         this.logger.log("Email sent");
         return;
       } catch (error) {

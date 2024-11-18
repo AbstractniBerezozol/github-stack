@@ -9,7 +9,7 @@ import { Repository } from "typeorm";
 import { User } from "../../../users/domain/entity/user.entity";
 import { GitRepository } from "../entity/repository.entity";
 import { Release } from "../entity/release.entity";
-import { ClientProxy } from "@nestjs/microservices";
+import { GitrepositoryService } from "../../service/gitrepository.service";
 
 @Injectable()
 export class GitHubScheduler {
@@ -17,6 +17,7 @@ export class GitHubScheduler {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly emailService: SendingEmailService,
+    private readonly gitServ: GitrepositoryService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
@@ -53,22 +54,29 @@ export class GitHubScheduler {
   }
 
   async checkForUpdates() {
-    const repositories = await this.gitRepository.find({ relations: ["user"] });
+    const repositories = await this.gitRepository.find({
+      relations: ["user", "releases"],
+    });
     for (const repo of repositories) {
       const latestRelease = await this.getLatestReliase(repo);
-      const listOfReleases = repo.releases;
-      // const sortedListOfReleases = listOfReleases.sort();
+      let listOfReleases = repo.releases;
+      this.gitServ.checkForReleaseStored(listOfReleases, repo);
+      const sortedListOfReleases = listOfReleases.sort(
+        (startRelease, nextRelease) =>
+          new Date(startRelease.release_date).getTime() -
+          new Date(nextRelease.release_date).getTime()
+      );
       repo.releases?.forEach((release) => {
-        if (
-          // sortedListOfReleases[sortedListOfReleases.length - 1] &&
-          release.release != latestRelease
-        ) {
+        this.gitServ.checkForDefaultRelease(latestRelease);
+        if (sortedListOfReleases[0] && release.release != latestRelease) {
           const lateRelease = this.releaseRep.create({
             release: latestRelease,
             release_date: new Date(),
             repository: repo,
           });
+          repo.releases = [lateRelease];
           this.releaseRep.save(lateRelease);
+          this.gitRepository.save(repo.releases);
           this.sendNotification(repo);
         }
       });
