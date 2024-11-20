@@ -3,7 +3,7 @@ import { EmailData } from "../../../../github-stack/src/github-ineraction/domain
 import { AppController } from "../../app.controller";
 
 @WebSocketGateway()
-export class EmailGateway {
+export class EmailReceivingService {
   constructor(private readonly emailController: AppController) {}
   @SubscribeMessage("send-email")
   handleMessage(payload: EmailData) {

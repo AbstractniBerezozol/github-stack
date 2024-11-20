@@ -59,27 +59,12 @@ export class GitHubScheduler {
     });
     for (const repo of repositories) {
       const latestRelease = await this.getLatestReliase(repo);
-      let listOfReleases = repo.releases;
-      this.gitServ.checkForReleaseStored(listOfReleases, repo);
-      const sortedListOfReleases = listOfReleases.sort(
-        (startRelease, nextRelease) =>
-          new Date(startRelease.release_date).getTime() -
-          new Date(nextRelease.release_date).getTime()
-      );
-      repo.releases?.forEach((release) => {
-        this.gitServ.checkForDefaultRelease(latestRelease);
-        if (sortedListOfReleases[0] && release.release != latestRelease) {
-          const lateRelease = this.releaseRep.create({
-            release: latestRelease,
-            release_date: new Date(),
-            repository: repo,
-          });
-          repo.releases = [lateRelease];
-          this.releaseRep.save(lateRelease);
-          this.gitRepository.save(repo.releases);
-          this.sendNotification(repo);
-        }
-      });
+      if (!latestRelease) {
+        return;
+      } else if (!repo.releases?.length && latestRelease) {
+        this.gitServ.releaseStore(latestRelease, repo);
+        this.sendNotification(repo);
+      }
     }
   }
   async sendNotification(repo: GitRepository) {

@@ -124,8 +124,6 @@ describe("SendingEmailService", () => {
       await expect(sendingEmailService.sendEmail(emailData)).rejects.toThrow(
         "Failed to send Email"
       );
-      
-      
     });
   });
 

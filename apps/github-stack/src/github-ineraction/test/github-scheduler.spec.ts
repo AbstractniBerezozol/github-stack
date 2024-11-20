@@ -208,7 +208,7 @@ describe("GithubScheduler", () => {
       expect(githubScheduler.getLatestReliase).toHaveBeenLastCalledWith(
         mockedRepository
       );
-      expect(gitServ.checkForReleaseStored).toHaveBeenCalledWith(
+      expect(gitServ.releaseStore).toHaveBeenCalledWith(
         mockedRepository.releases,
         mockedRepository
       );
