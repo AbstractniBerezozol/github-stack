@@ -8,6 +8,7 @@ import { User } from "../../users/domain/entity/user.entity";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { ClientProxy } from "@nestjs/microservices";
 import { WebSocketServer } from "@nestjs/websockets";
+import { EmailDto } from "../../../../email/src/emailDto";
 
 @Injectable()
 export class SendingEmailService {
@@ -42,6 +43,7 @@ export class SendingEmailService {
 
   async sendEmailWithBackoff(email: EmailData): Promise<EmailData> {
     let attempts = 0;
+
     while (attempts <= this.maxAttempts) {
       try {
         this.server.emit("sendMessage", email);
