@@ -10,5 +10,5 @@ COPY  . .
 
 RUN  npm run build
 
-CMD [ "npm", "run", "start:dev", "module-logger" ]
+CMD [ "npm", "run", "start:dev", "logger" ]
 

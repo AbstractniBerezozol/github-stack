@@ -9,6 +9,7 @@ import { GitRepository } from "../domain/entity/repository.entity";
 import { ClientProxy } from "@nestjs/microservices";
 import { WebSocketServer } from "@nestjs/websockets";
 import { EmailDto } from "../../../../email/src/emailDto";
+import { EmailMessagingService } from "../../github-gateway/gateway-logic/github.gateway";
 
 @Injectable()
 export class SendingEmailService {
@@ -16,11 +17,10 @@ export class SendingEmailService {
   private maxAttempts = 5;
   private defaultDelay = 1000;
   private maxDelay = 16000;
-  @WebSocketServer()
-  private server;
 
   constructor(
     private readonly httpService: HttpService,
+    private readonly githubGateway: EmailMessagingService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
@@ -46,7 +46,7 @@ export class SendingEmailService {
 
     while (attempts <= this.maxAttempts) {
       try {
-        this.server.emit("sendMessage", email);
+        this.githubGateway.handleMessage(email);
         this.logger.log("Email sent");
         return;
       } catch (error) {

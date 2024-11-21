@@ -6,8 +6,8 @@ import { MessagePattern } from "@nestjs/microservices";
 @Controller("send-email")
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  @MessagePattern("send-email")
   async sendAnEmail(emailDto: EmailDto): Promise<EmailDto> {
     return this.appService.sendLetter(emailDto);
   }
 }
+

@@ -4,6 +4,9 @@ import { AppService } from "./app.service";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { HttpModule, HttpService } from "@nestjs/axios";
+import { LoggerModule } from "../../logger/src/logger/logger.module";
+import { ClientsModule, Transport } from "@nestjs/microservices";
+import { GatewayModule } from "../../gateway/src/gateway.module";
 
 @Module({
   imports: [
@@ -29,5 +32,6 @@ import { HttpModule, HttpService } from "@nestjs/axios";
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [AppService],
 })
-export class AppModule {}
+export class EmailAppModule {}

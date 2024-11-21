@@ -5,8 +5,8 @@ import { AppController } from "../../app.controller";
 @WebSocketGateway()
 export class EmailReceivingService {
   constructor(private readonly emailController: AppController) {}
-  @SubscribeMessage("send-email")
+  @SubscribeMessage("send-email-to-emailService")
   handleMessage(payload: EmailData) {
-   return this.emailController.sendAnEmail(payload);
+    return this.emailController.sendAnEmail(payload);
   }
 }

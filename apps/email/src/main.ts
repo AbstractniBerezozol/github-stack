@@ -1,11 +1,12 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
+import { EmailAppModule } from "./app.module";
 import { Transport } from "@nestjs/microservices";
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(AppModule, {
+  const app = await NestFactory.createMicroservice(EmailAppModule, {
     transport: Transport.TCP,
     options: {
+      host: "email",
       port: 3001,
     },
   });

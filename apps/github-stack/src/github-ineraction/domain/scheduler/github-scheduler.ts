@@ -57,6 +57,7 @@ export class GitHubScheduler {
     const repositories = await this.gitRepository.find({
       relations: ["user", "releases"],
     });
+    console.log("checking for updates");
     for (const repo of repositories) {
       const latestRelease = await this.getLatestReliase(repo);
       if (!latestRelease) {
@@ -80,7 +81,7 @@ export class GitHubScheduler {
     await this.emailService.sendEmailWithBackoff(letter);
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCron() {
     await this.checkForUpdates();
   }

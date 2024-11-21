@@ -12,10 +12,13 @@ import { Release } from "./domain/entity/release.entity";
 import { SendingEmailService } from "./service/sending-email.service";
 import { GitrepositoryService } from "./service/gitrepository.service";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { GatewayModule } from "../../../gateway/src/gateway.module";
+import { EmailMessagingService } from "../github-gateway/gateway-logic/github.gateway";
 
 @Module({
   imports: [
-   
+    GatewayModule,
+    EmailMessagingService,
     TypeOrmModule.forFeature([User, GitRepository, Release]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

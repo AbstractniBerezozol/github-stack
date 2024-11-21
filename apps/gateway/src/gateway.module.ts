@@ -1,7 +1,10 @@
 import { Module } from "@nestjs/common";
-import { GatewayController } from "./gateway.controller";
-import { GatewayService } from "./gateway.service";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { GatewayController } from "./controller/gateway.controller";
+import { GatewayService } from "./service/gateway.service";
+import { EmailAppModule } from "../../email/src/app.module";
+import { EmailMessagingService } from "../../github-stack/src/github-gateway/gateway-logic/github.gateway";
+import { GithubInteractionModule } from "../../github-stack/src/github-ineraction/github-interaction.module";
 
 @Module({
   imports: [
@@ -10,13 +13,15 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
         name: "EMAIL_SERVICE",
         transport: Transport.TCP,
         options: {
-          host: "127.0.0.1",
+          host: "email",
           port: 3001,
         },
       },
     ]),
+    EmailAppModule, 
   ],
   controllers: [GatewayController],
   providers: [GatewayService],
+  exports: [GatewayService],
 })
 export class GatewayModule {}

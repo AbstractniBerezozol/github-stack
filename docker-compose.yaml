@@ -47,8 +47,8 @@ services:
     networks:
       - fullstack
 
-  module-logger:
-    container_name: module-logger
+  logger:
+    container_name: logger
     build:
       dockerfile: dockerfile-module-logger
     ports:

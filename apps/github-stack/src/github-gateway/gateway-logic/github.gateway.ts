@@ -1,18 +1,12 @@
-import {
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-} from "@nestjs/websockets";
-import { Server } from "http";
+import { MessageBody } from "@nestjs/websockets";
 import { EmailData } from "../../github-ineraction/domain/interface/email.interface";
+import { ClientProxy, MessagePattern } from "@nestjs/microservices";
+import { Inject } from "@nestjs/common";
 
-@WebSocketGateway({ cors: { origin: "*" } })
 export class EmailMessagingService {
-  @WebSocketServer()
-  server: Server;
-  @SubscribeMessage("sendMessage")
+  constructor(@Inject("GATEWAY") private readonly clientGateway: ClientProxy) {}
+  @MessagePattern({ cmd: "send-email" })
   handleMessage(@MessageBody() email: EmailData) {
-    return this.server.emit("send-email", email);
+    return this.clientGateway.send("send-email", email);
   }
 }
