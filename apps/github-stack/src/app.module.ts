@@ -7,12 +7,13 @@ import { HttpModule } from "@nestjs/axios";
 import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { LoggerModule } from "../../logger/src/logger/logger.module";
+import { GithubGatewayModule } from "./github-gateway/github-gateway.module";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { GithubGatewayModule } from './github-gateway/github-gateway.module';
 @Module({
   imports: [
     LoggerModule.register("github-stack"),
     GithubInteractionModule,
+    GithubGatewayModule,
     UsersModule,
     AuthModule,
     TypeOrmModule.forRootAsync({
@@ -32,7 +33,6 @@ import { GithubGatewayModule } from './github-gateway/github-gateway.module';
     ConfigModule.forRoot({ isGlobal: true }),
     HttpModule,
     ScheduleModule.forRoot(),
-    GithubGatewayModule,
   ],
   controllers: [],
   providers: [],

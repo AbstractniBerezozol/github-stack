@@ -10,10 +10,14 @@ import { User } from "../../../users/domain/entity/user.entity";
 import { GitRepository } from "../entity/repository.entity";
 import { Release } from "../entity/release.entity";
 import { GitrepositoryService } from "../../service/gitrepository.service";
+import { EmailMessagingService } from "../../../github-gateway/gateway-logic/github.gateway";
 
 @Injectable()
 export class GitHubScheduler {
   constructor(
+    //checking
+    private readonly emailMessagingService: EmailMessagingService,
+    //end
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly emailService: SendingEmailService,
@@ -83,6 +87,8 @@ export class GitHubScheduler {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCron() {
+    await this.emailMessagingService.checkingDoesItWork("Hello World!");
+
     await this.checkForUpdates();
   }
 

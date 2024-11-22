@@ -20,7 +20,7 @@ export class SendingEmailService {
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly githubGateway: EmailMessagingService,
+    private readonly emailMessagingService: EmailMessagingService,
     @InjectRepository(User)
     private readonly userRep: Repository<User>,
     @InjectRepository(GitRepository)
@@ -43,10 +43,11 @@ export class SendingEmailService {
 
   async sendEmailWithBackoff(email: EmailData): Promise<EmailData> {
     let attempts = 0;
+    const pattern = {cmd: 'send-email'}
 
     while (attempts <= this.maxAttempts) {
       try {
-        this.githubGateway.handleMessage(email);
+        this.emailMessagingService.handleMessage(email);
         this.logger.log("Email sent");
         return;
       } catch (error) {

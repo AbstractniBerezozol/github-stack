@@ -2,9 +2,6 @@ import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { GatewayController } from "./controller/gateway.controller";
 import { GatewayService } from "./service/gateway.service";
-import { EmailAppModule } from "../../email/src/app.module";
-import { EmailMessagingService } from "../../github-stack/src/github-gateway/gateway-logic/github.gateway";
-import { GithubInteractionModule } from "../../github-stack/src/github-ineraction/github-interaction.module";
 
 @Module({
   imports: [
@@ -17,8 +14,16 @@ import { GithubInteractionModule } from "../../github-stack/src/github-ineractio
           port: 3001,
         },
       },
+
+      {
+        name: "GITHUB_STACK_CLIENT",
+        transport: Transport.TCP,
+        options: {
+          host: "github-stack",
+          port: 3001,
+        },
+      },
     ]),
-    EmailAppModule, 
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

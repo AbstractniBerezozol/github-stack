@@ -16,7 +16,8 @@ import { EmailMessagingService } from "./gateway-logic/github.gateway";
     ]),
   ],
 
-  controllers: [],
+  controllers: [EmailMessagingService],
   providers: [EmailMessagingService],
+  exports: [EmailMessagingService],
 })
 export class GithubGatewayModule {}
