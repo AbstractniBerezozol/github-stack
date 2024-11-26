@@ -7,11 +7,13 @@ export class EmailMessagingService {
   constructor(@Inject("GATEWAY") private readonly clientGateway: ClientProxy) {}
   @MessagePattern({ cmd: "send-email" })
   handleMessage(@MessageBody() email: EmailData) {
-    return this.clientGateway.send({ cmd: "send-email" }, email);
+    return this.clientGateway.send({ cmd: "send-email" }, email).subscribe();
   }
 
-  checkingDoesItWork(string: string) {
+  
+  checkingDoesItWork(message: any) {
     console.log("checkingDoesItWork");
-    return this.clientGateway.send({ cmd: "checking" }, string).subscribe();
+    console.log(message)
+    return this.clientGateway.send({ cmd: "checking" }, message).subscribe();
   }
 }

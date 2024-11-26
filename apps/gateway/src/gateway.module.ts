@@ -11,7 +11,7 @@ import { GatewayService } from "./service/gateway.service";
         transport: Transport.TCP,
         options: {
           host: "email",
-          port: 3001,
+          port: 3007,
         },
       },
 
@@ -20,7 +20,7 @@ import { GatewayService } from "./service/gateway.service";
         transport: Transport.TCP,
         options: {
           host: "github-stack",
-          port: 3001,
+          port: 3005,
         },
       },
     ]),

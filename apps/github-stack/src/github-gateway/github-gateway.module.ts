@@ -10,13 +10,21 @@ import { EmailMessagingService } from "./gateway-logic/github.gateway";
         transport: Transport.TCP,
         options: {
           host: "gateway",
-          port: 3002,
+          port: 3006,
+        },
+      },
+      {
+        name: "EMAIL_SERVICE",
+        transport: Transport.TCP,
+        options: {
+          host: "email",
+          port: 3001,
         },
       },
     ]),
   ],
 
-  controllers: [EmailMessagingService],
+  controllers: [],
   providers: [EmailMessagingService],
   exports: [EmailMessagingService],
 })

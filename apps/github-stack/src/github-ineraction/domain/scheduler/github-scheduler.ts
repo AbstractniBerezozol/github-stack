@@ -85,9 +85,9 @@ export class GitHubScheduler {
     await this.emailService.sendEmailWithBackoff(letter);
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
-    await this.emailMessagingService.checkingDoesItWork("Hello World!");
+    await this.emailMessagingService.checkingDoesItWork({something: "Hello World!"});
 
     await this.checkForUpdates();
   }

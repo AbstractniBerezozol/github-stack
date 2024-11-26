@@ -47,17 +47,17 @@ services:
     networks:
       - fullstack
 
-  logger:
-    container_name: logger
-    build:
-      dockerfile: dockerfile-module-logger
-    ports:
-      - "3003:3003"
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    networks:
-      - fullstack
+  # logger:
+  #   container_name: logger
+  #   build:
+  #     dockerfile: dockerfile-module-logger
+  #   ports:
+  #     - "3003:3003"
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   networks:
+  #     - fullstack
 
   postgres:
     image: postgres

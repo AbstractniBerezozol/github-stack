@@ -7,7 +7,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: "email",
-      port: 3001,
+      port: 3007,
     },
   });
   await app.listen();

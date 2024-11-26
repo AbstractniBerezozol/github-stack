@@ -5,24 +5,26 @@ import { ValidationPipe } from "@nestjs/common";
 import { Transport } from "@nestjs/microservices";
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(GithubAppModule, {
+  const app = await NestFactory.create(GithubAppModule);
+
+  const microservice = app.connectMicroservice({
     transport: Transport.TCP,
-    options: {
-      host: "github-stack",
-      port: 3000,
-    },
+    options: { host: "github-stack", port: 3005 },
   });
-  const options = new DocumentBuilder()
-    .setTitle("GitHub Project")
-    .setDescription("Praksa Applikacija")
-    .setVersion("1.0")
-    .build();
+
+  // const options = new DocumentBuilder()
+  //   .setTitle("GitHub Project")
+  //   .setDescription("Praksa Applikacija")
+  //   .setVersion("1.0")
+  //   .build();
 
   // const document = SwaggerModule.createDocument(app, options);
 
   // SwaggerModule.setup("api", app, document);
-  // app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen();
+  app.useGlobalPipes(new ValidationPipe());
+
+  await app.startAllMicroservices();
+  await app.listen(3000);
 }
 bootstrap();

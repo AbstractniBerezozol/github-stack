@@ -10,7 +10,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: "gateway",
-      port: 3002,
+      port: 3006,
     },
   });
   await app.listen();
