@@ -22,6 +22,6 @@ export class GatewayController {
     console.log(string);
     const messageToEmail = string;
     const pattern = { cmd: "checking" };
-    // this.gatewayService.mockSending()
+    this.gatewayService.mockSending()
   }
 }

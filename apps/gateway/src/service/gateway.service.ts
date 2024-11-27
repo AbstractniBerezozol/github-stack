@@ -14,7 +14,13 @@ export class GatewayService {
   }
 
   mockSending() {
-    console.log("Sending mock stuff");
-    return this.clientEmailService.send({ cmd: "checking" }, "hello").subscribe();
+    try {
+      console.log("Sending mock stuff");
+      return this.clientEmailService
+        .send({ cmd: "checking" }, "hello")
+        .subscribe();
+    } catch {
+      throw new Error("Email could not be sent!");
+    }
   }
 }
