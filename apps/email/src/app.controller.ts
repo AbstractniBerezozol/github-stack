@@ -9,7 +9,7 @@ import { EmailData } from "../../github-stack/src/github-ineraction/domain/inter
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern("send-email-to-emailService")
+  @MessagePattern({ cmd: "send-email-to-emailService" })
   handleMessage(payload: EmailData) {
     return this.appService.sendLetter(payload);
   }
