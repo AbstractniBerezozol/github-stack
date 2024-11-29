@@ -47,6 +47,30 @@ services:
     networks:
       - fullstack
 
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    networks:
+      - fullstack
+
+  redis-commander:
+    depends_on:
+      - redis
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379 # note: this has to be the port the redis container exposes.
+    ports:
+      - "8081:8081"
+    networks:
+      - fullstack
   # logger:
   #   container_name: logger
   #   build:

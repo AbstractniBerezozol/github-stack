@@ -21,6 +21,14 @@ import { EmailMessagingService } from "./gateway-logic/github.gateway";
           port: 3001,
         },
       },
+      {
+        name: "REDIS",
+        transport: Transport.REDIS,
+        options: {
+          host: "redis",
+          port: 6279,
+        },
+      },
     ]),
   ],
 

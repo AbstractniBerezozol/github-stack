@@ -1,9 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Repository } from "typeorm";
-import { GitRepository } from "../domain/entity/repository.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../../users/domain/entity/user.entity";
+import { Repository } from "typeorm";
 import { Release } from "../domain/entity/release.entity";
+import { GitRepository } from "../domain/entity/repository.entity";
 
 @Injectable()
 export class GitrepositoryService {

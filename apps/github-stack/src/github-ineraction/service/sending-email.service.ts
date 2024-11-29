@@ -1,15 +1,12 @@
 import { HttpService } from "@nestjs/axios";
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import { EmailData } from "../domain/interface/email.interface";
-import { lastValueFrom } from "rxjs";
+import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { lastValueFrom } from "rxjs";
 import { Repository } from "typeorm";
+import { EmailMessagingService } from "../../github-gateway/gateway-logic/github.gateway";
 import { User } from "../../users/domain/entity/user.entity";
 import { GitRepository } from "../domain/entity/repository.entity";
-import { ClientProxy } from "@nestjs/microservices";
-import { WebSocketServer } from "@nestjs/websockets";
-import { EmailDto } from "../../../../email/src/emailDto";
-import { EmailMessagingService } from "../../github-gateway/gateway-logic/github.gateway";
+import { EmailData } from "../domain/interface/email.interface";
 
 @Injectable()
 export class SendingEmailService {
@@ -43,11 +40,11 @@ export class SendingEmailService {
 
   async sendEmailWithBackoff(email: EmailData): Promise<EmailData> {
     let attempts = 0;
-    const pattern = {cmd: 'send-email'}
+    const pattern = { cmd: "send-email" };
 
     while (attempts <= this.maxAttempts) {
       try {
-        this.emailMessagingService.handleMessage(email);
+        this.emailMessagingService.handleMessage(pattern, email);
         this.logger.log("Email sent");
         return;
       } catch (error) {
@@ -101,5 +98,12 @@ export class SendingEmailService {
       text: `Greetings! Here is your new password: ${password}`,
     };
     await this.sendEmailWithBackoff(letter);
+  }
+
+  async sendMessageThroughRedis() {
+    const letter = "Hello, I am Bob";
+    const pattern = { cmd: "send-redis-message" };
+    console.log("redis-1");
+    await this.emailMessagingService.checkingRedis(pattern, letter);
   }
 }

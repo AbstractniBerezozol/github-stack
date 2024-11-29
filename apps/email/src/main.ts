@@ -10,6 +10,8 @@ async function bootstrap() {
       port: 3007,
     },
   });
+
+  
   await app.listen();
   console.log("Email microservice is running");
 }

@@ -1,14 +1,13 @@
-import { Module } from "@nestjs/common";
-import { UsersModule } from "./users/users.module";
-import { AuthModule } from "./auth/auth.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
-import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { LoggerModule } from "../../logger/src/logger/logger.module";
+import { AuthModule } from "./auth/auth.module";
 import { GithubGatewayModule } from "./github-gateway/github-gateway.module";
-import { ClientsModule, Transport } from "@nestjs/microservices";
+import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
+import { UsersModule } from "./users/users.module";
 @Module({
   imports: [
     LoggerModule.register("github-stack"),

@@ -13,14 +13,14 @@ export class GatewayService {
     return this.clientEmailService.send(pattern, email).subscribe();
   }
 
-  mockSending() {
-    try {
-      console.log("Sending mock stuff");
-      return this.clientEmailService
-        .send({ cmd: "checking" }, "hello")
-        .subscribe();
-    } catch {
-      throw new Error("Email could not be sent!");
-    }
-  }
+  // mockSending() {
+  //   try {
+  //     console.log("Sending mock stuff");
+  //     return this.clientEmailService
+  //       .send({ cmd: "checking" }, "hello")
+  //       .subscribe();
+  //   } catch {
+  //     throw new Error("Email could not be sent!");
+  //   }
+  // }
 }

@@ -9,12 +9,17 @@ import { EmailData } from "../../github-stack/src/github-ineraction/domain/inter
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern("send-email-to-emailService")
+  @MessagePattern({ cmd: "send-email-to-emailService" })
   handleMessage(payload: EmailData) {
     return this.appService.sendLetter(payload);
   }
-  @MessagePattern({ cmd: "checking" })
-  seeDoesItWork(payload: any) {
-    console.log(`I am here Bro ${payload}`);
+  // @MessagePattern({ cmd: "checking" })
+  // seeDoesItWork(payload: any) {
+  //   console.log(`I am here Bro ${payload}`);
+  // }
+
+  @MessagePattern({ cmd: "send-redis-message" })
+  doesRedisWork(payload: any) {
+    console.log(payload);
   }
 }

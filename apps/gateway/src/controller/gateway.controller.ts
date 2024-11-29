@@ -16,12 +16,12 @@ export class GatewayController {
     return this.gatewayService.handleMessage(pattern, payload);
   }
 
-  @MessagePattern({ cmd: "checking" })
-  async messageCame(@Body() string: any) {
-    console.log("LETS GOOOOOOOOOOOOOOOO");
-    console.log(string);
-    const messageToEmail = string;
-    const pattern = { cmd: "checking" };
-    this.gatewayService.mockSending()
-  }
+  // @MessagePattern({ cmd: "checking" })
+  // async messageCame(@Body() string: any) {
+  //   console.log("LETS GOOOOOOOOOOOOOOOO");
+  //   console.log(string);
+  //   const messageToEmail = string;
+  //   const pattern = { cmd: "checking" };
+  //   this.gatewayService.mockSending()
+  // }
 }

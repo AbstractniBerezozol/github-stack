@@ -26,4 +26,9 @@ export class AppService {
       throw new Error("{{We are in trouble now}}");
     }
   }
+
+
+  seeDoesItWorkService(payload: any) {
+    console.log(`I am here Bro ${payload}`);
+  }
 }

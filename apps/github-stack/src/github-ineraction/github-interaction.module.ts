@@ -12,6 +12,8 @@ import { Release } from "./domain/entity/release.entity";
 import { SendingEmailService } from "./service/sending-email.service";
 import { GitrepositoryService } from "./service/gitrepository.service";
 import { GithubGatewayModule } from "../github-gateway/github-gateway.module";
+import { BullModule } from "@nestjs/bull";
+import { ClientsModule, Transport } from "@nestjs/microservices";
 
 @Module({
   imports: [

@@ -1,16 +1,16 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { SendingEmailService } from "../../service/sending-email.service";
 import { HttpService } from "@nestjs/axios";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { firstValueFrom, lastValueFrom } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { Repository } from "typeorm";
-import { User } from "../../../users/domain/entity/user.entity";
-import { GitRepository } from "../entity/repository.entity";
-import { Release } from "../entity/release.entity";
-import { GitrepositoryService } from "../../service/gitrepository.service";
 import { EmailMessagingService } from "../../../github-gateway/gateway-logic/github.gateway";
+import { User } from "../../../users/domain/entity/user.entity";
+import { GitrepositoryService } from "../../service/gitrepository.service";
+import { SendingEmailService } from "../../service/sending-email.service";
+import { Release } from "../entity/release.entity";
+import { GitRepository } from "../entity/repository.entity";
 
 @Injectable()
 export class GitHubScheduler {
@@ -87,9 +87,11 @@ export class GitHubScheduler {
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    await this.emailMessagingService.checkingDoesItWork({
-      something: "Hello World!",
-    });
+    // await this.emailMessagingService.checkingDoesItWork({
+    //   something: "Hello World!",
+    // });
+
+    await this.emailService.sendMessageThroughRedis();
 
     await this.checkForUpdates();
   }

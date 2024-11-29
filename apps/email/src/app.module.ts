@@ -1,12 +1,10 @@
+import { MailerModule } from "@nestjs-modules/mailer";
+import { HttpModule } from "@nestjs/axios";
+import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { HttpModule, HttpService } from "@nestjs/axios";
-import { LoggerModule } from "../../logger/src/logger/logger.module";
-import { ClientsModule, Transport } from "@nestjs/microservices";
-import { GatewayModule } from "../../gateway/src/gateway.module";
 
 @Module({
   imports: [

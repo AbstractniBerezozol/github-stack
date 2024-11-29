@@ -4,16 +4,23 @@ import { ClientProxy, MessagePattern } from "@nestjs/microservices";
 import { Inject } from "@nestjs/common";
 
 export class EmailMessagingService {
-  constructor(@Inject("GATEWAY") private readonly clientGateway: ClientProxy) {}
+  constructor(
+    @Inject("GATEWAY") private readonly clientGateway: ClientProxy,
+    @Inject("REDIS") private readonly redisClient: ClientProxy
+  ) {}
   @MessagePattern({ cmd: "send-email" })
-  handleMessage(@MessageBody() email: EmailData) {
-    return this.clientGateway.send({ cmd: "send-email" }, email).subscribe();
+  handleMessage(pattern: Object, @MessageBody() email: EmailData) {
+    return this.clientGateway.send(pattern, email).subscribe();
   }
 
-  
-  checkingDoesItWork(message: any) {
-    console.log("checkingDoesItWork");
-    console.log(message)
-    return this.clientGateway.send({ cmd: "checking" }, message).subscribe();
+  // checkingDoesItWork(message: any) {
+  //   console.log("checkingDoesItWork");
+  //   console.log(message);
+  //   return this.clientGateway.send({ cmd: "checking" }, message).subscribe();
+  // }
+
+  checkingRedis(pattern: Object, letter: any) {
+    console.log('redis-2')
+    return this.redisClient.send(pattern, letter);
   }
 }
