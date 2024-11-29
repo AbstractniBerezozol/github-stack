@@ -21,6 +21,6 @@ export class EmailMessagingService {
 
   checkingRedis(pattern: Object, letter: any) {
     console.log('redis-2')
-    return this.redisClient.send(pattern, letter);
+    return this.redisClient.send(pattern, letter).subscribe();
   }
 }
