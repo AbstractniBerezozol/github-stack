@@ -4,11 +4,19 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AppController } from "./controller/app.controller";
 import { AppService } from "./services/app.service";
-import { EmailLoggerService } from "./services/email-logger.service";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-
 @Module({
   imports: [
+    ClientsModule.register([
+      {
+        name: "REDIS",
+        transport: Transport.REDIS,
+        options: {
+          host: "redis",
+          port: 6379,
+        },
+      },
+    ]),
     HttpModule,
     ConfigModule.forRoot({ envFilePath: ".env", isGlobal: true }),
     MailerModule.forRootAsync({
@@ -30,7 +38,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, EmailLoggerService],
-  exports: [AppService, ],
+  providers: [AppService],
+  exports: [AppService],
 })
 export class EmailAppModule {}

@@ -1,8 +1,20 @@
 import { DynamicModule, Module } from "@nestjs/common";
 import { LoggerService } from "./logger.service";
+import { ClientsModule, Transport } from "@nestjs/microservices";
 
 @Module({
-  imports: [],
+  imports: [
+    ClientsModule.register([
+      {
+        name: "REDIS",
+        transport: Transport.REDIS,
+        options: {
+          host: "redis",
+          port: 6379,
+        },
+      },
+    ]),
+  ],
   providers: [LoggerService],
   exports: [LoggerService],
 })

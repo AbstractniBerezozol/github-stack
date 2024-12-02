@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./apps/github-stack/test/jest-e2e.json"
   },
   "dependencies": {
+    "@liaoliaots/nestjs-redis": "^10.0.0",
     "@nestjs-modules/ioredis": "^2.0.2",
     "@nestjs-modules/mailer": "^1.10.3",
     "@nestjs/axios": "^3.0.3",

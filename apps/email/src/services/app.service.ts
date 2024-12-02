@@ -1,13 +1,12 @@
-import { InjectRedis } from "@nestjs-modules/ioredis";
 import { MailerService } from "@nestjs-modules/mailer";
-import { Injectable } from "@nestjs/common";
-import Redis from "ioredis";
+import { Inject, Injectable } from "@nestjs/common";
 import { EmailDto } from "../domain/emailDto";
+import { ClientProxy } from "@nestjs/microservices";
 
 @Injectable()
 export class AppService {
   constructor(
-    @InjectRedis() private readonly redisClient: Redis,
+    @Inject("REDIS") private readonly redisClient: ClientProxy,
     private readonly emailService: MailerService
   ) {}
   async sendLetter(emailDto: EmailDto) {
@@ -30,7 +29,7 @@ export class AppService {
         details: { from, to, subject, text },
         timestamp: new Date().toISOString(),
       });
-      await this.redisClient.publish("email-log", newLetterToRedis);
+      await this.redisClient.send("email-log", newLetterToRedis);
       return newLetter;
     } catch (err) {
       console.log("New error", err);
@@ -39,7 +38,7 @@ export class AppService {
   }
 
   async seeDoesItWorkService(payload: any) {
-    console.log(`I am here Bro ${payload}`);
+    console.log(`You send it ${payload}`);
     try {
       console.log("Checking the logging");
       const newLetterToRedis = JSON.stringify({
@@ -47,7 +46,8 @@ export class AppService {
         details: { payload },
         timestamp: new Date().toISOString(),
       });
-      await this.redisClient.publish("email-log", newLetterToRedis);
+      console.log(newLetterToRedis);
+      this.redisClient.send("email-log", newLetterToRedis);
       return;
     } catch (err) {
       console.log("New error", err);

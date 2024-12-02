@@ -19,5 +19,6 @@ export class AppController {
   @EventPattern("send-redis-message")
   doesRedisWork(payload: any) {
     console.log(payload);
+    this.appService.seeDoesItWorkService(payload);
   }
 }

@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
-import * as winston from 'winston';
-import 'winston-daily-rotate-file';
+import { Injectable, Logger } from "@nestjs/common";
+import { EventPattern } from "@nestjs/microservices";
+import * as winston from "winston";
+import "winston-daily-rotate-file";
 
 @Injectable()
 export class LoggerService extends Logger {
@@ -10,35 +11,40 @@ export class LoggerService extends Logger {
     super(context);
 
     this.logger = winston.createLogger({
-      level: 'info',
+      level: "info",
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.simple(),
+        winston.format.simple()
       ),
       transports: [
         new winston.transports.DailyRotateFile({
           dirname: `logs/${context}/info`,
-          filename: '%DATE%.log',
-          datePattern: 'YYYY-MM-DD',
-          level: 'info',
+          filename: "%DATE%.log",
+          datePattern: "YYYY-MM-DD",
+          level: "info",
           zippedArchive: true,
         }),
         new winston.transports.DailyRotateFile({
           dirname: `logs/${context}/debug`,
-          filename: '%DATE%.log',
-          datePattern: 'YYYY-MM-DD',
-          level: 'info',
+          filename: "%DATE%.log",
+          datePattern: "YYYY-MM-DD",
+          level: "info",
           zippedArchive: true,
         }),
         new winston.transports.DailyRotateFile({
           dirname: `logs/${context}/error`,
-          filename: '%DATE%-error.log',
-          datePattern: 'YYYY-MM-DD',
-          level: 'error',
+          filename: "%DATE%-error.log",
+          datePattern: "YYYY-MM-DD",
+          level: "error",
           zippedArchive: true,
         }),
       ],
     });
+  }
+
+  @EventPattern("email-log")
+  loggingTheMessage(payload: any) {
+    console.log(payload);
   }
 
   log(message: string, context?: string) {
