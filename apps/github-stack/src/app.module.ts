@@ -3,14 +3,12 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { LoggerModule } from "../../logger/logger.module";
 import { AuthModule } from "./auth/auth.module";
 import { GithubGatewayModule } from "./github-gateway/github-gateway.module";
 import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
 import { UsersModule } from "./users/users.module";
 @Module({
   imports: [
-    LoggerModule.register("github-stack"),
     GithubInteractionModule,
     GithubGatewayModule,
     UsersModule,

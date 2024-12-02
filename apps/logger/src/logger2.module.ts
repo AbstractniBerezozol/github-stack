@@ -1,6 +1,7 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { LoggerService } from "./logger.service";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { LoggerController } from "./logger2.controller";
+import { LoggerService } from "./logger2.service";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
       },
     ]),
   ],
+  controllers: [LoggerController],
   providers: [LoggerService],
   exports: [LoggerService],
 })

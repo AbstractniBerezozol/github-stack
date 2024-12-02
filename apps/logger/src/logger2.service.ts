@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { EventPattern } from "@nestjs/microservices";
 import * as winston from "winston";
 import "winston-daily-rotate-file";
 
@@ -42,10 +41,7 @@ export class LoggerService extends Logger {
     });
   }
 
-  @EventPattern("email-log")
-  loggingTheMessage(payload: any) {
-    console.log(payload);
-  }
+  
 
   log(message: string, context?: string) {
     this.logger.info(message, { context });

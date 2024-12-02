@@ -71,10 +71,11 @@ services:
       - "8081:8081"
     networks:
       - fullstack
+
   logger:
     container_name: logger
     build:
-      dockerfile: dockerfile-module-logger
+      dockerfile: dockerfile-logger
     ports:
       - "3003:3003"
     volumes:
