@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
+import { EmailDto } from "../../../email/src/domain/emailDto";
 import { GatewayService } from "../service/gateway.service";
-import { MessagePattern } from "@nestjs/microservices";
-import { EmailDto } from "../../../email/src/emailDto";
 
 @Controller()
 export class GatewayController {

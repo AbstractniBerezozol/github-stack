@@ -1,15 +1,14 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { SendingEmailService } from "../service/sending-email.service";
-import { User } from "../../users/domain/entity/user.entity";
 import { HttpService } from "@nestjs/axios";
-import { Repository } from "typeorm";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { EmailData } from "../domain/interface/email.interface";
-import { of, throwError } from "rxjs";
-import { GitRepository } from "../domain/entity/repository.entity";
 import { Logger } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { of, throwError } from "rxjs";
+import { Repository } from "typeorm";
+import { User } from "../../users/domain/entity/user.entity";
 import { Release } from "../domain/entity/release.entity";
-import { send } from "process";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { EmailData } from "../domain/interface/email.interface";
+import { SendingEmailService } from "../service/sending-email.service";
 
 const mockHttpService = {
   get: jest.fn(),

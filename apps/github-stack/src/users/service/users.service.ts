@@ -1,14 +1,13 @@
 import {
-  BadRequestException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../domain/entity/user.entity";
-import { Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
+import { Repository } from "typeorm";
 import { CreateUserDto } from "../domain/dto/create-user.dto";
 import { UpdateUserDto } from "../domain/dto/update-user.dto";
+import { User } from "../domain/entity/user.entity";
 import { UserRole } from "../domain/enum/roles.enum";
 
 @Injectable()

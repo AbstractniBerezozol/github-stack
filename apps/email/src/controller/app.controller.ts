@@ -1,9 +1,7 @@
 import { Controller } from "@nestjs/common";
-import { AppService } from "./app.service";
-import { EmailDto } from "./emailDto";
-import { MessagePattern } from "@nestjs/microservices";
-import { SubscribeMessage } from "@nestjs/websockets";
-import { EmailData } from "../../github-stack/src/github-ineraction/domain/interface/email.interface";
+import { EventPattern, MessagePattern } from "@nestjs/microservices";
+import { EmailData } from "../../../github-stack/src/github-ineraction/domain/interface/email.interface";
+import { AppService } from "../services/app.service";
 
 @Controller("send-email")
 export class AppController {
@@ -18,7 +16,7 @@ export class AppController {
   //   console.log(`I am here Bro ${payload}`);
   // }
 
-  @MessagePattern({ cmd: "send-redis-message" })
+  @EventPattern("send-redis-message")
   doesRedisWork(payload: any) {
     console.log(payload);
   }

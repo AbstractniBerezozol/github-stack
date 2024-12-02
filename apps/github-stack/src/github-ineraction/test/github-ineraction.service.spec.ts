@@ -7,12 +7,11 @@ import { of } from "rxjs";
 import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 import { UserRole } from "../../users/domain/enum/roles.enum";
+import { Release } from "../domain/entity/release.entity";
 import { GitRepository } from "../domain/entity/repository.entity";
 import { SearchBy } from "../domain/enum/repository.enum";
 import { GithubIneractionService } from "../service/github-ineraction.service";
 import { GitrepositoryService } from "../service/gitrepository.service";
-import { Release } from "../domain/entity/release.entity";
-import { get } from "http";
 
 const mockHttpService = {
   get: jest.fn(),

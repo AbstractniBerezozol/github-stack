@@ -1,18 +1,17 @@
+import { HttpService } from "@nestjs/axios";
+import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { of, throwError } from "rxjs";
+import { Repository } from "typeorm";
 import { User } from "../../users/domain/entity/user.entity";
 import { UserRole } from "../../users/domain/enum/roles.enum";
-import { GitHubScheduler } from "../domain/scheduler/github-scheduler";
-import { of, throwError } from "rxjs";
-import { GitRepository } from "../domain/entity/repository.entity";
-import { Repository } from "typeorm";
-import { SendingEmailService } from "../service/sending-email.service";
-import { HttpService } from "@nestjs/axios";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { ConfigService } from "@nestjs/config";
 import { Release } from "../domain/entity/release.entity";
-import { scheduler } from "timers/promises";
-import { GitrepositoryService } from "../service/gitrepository.service";
+import { GitRepository } from "../domain/entity/repository.entity";
 import { EmailData } from "../domain/interface/email.interface";
+import { GitHubScheduler } from "../domain/scheduler/github-scheduler";
+import { GitrepositoryService } from "../service/gitrepository.service";
+import { SendingEmailService } from "../service/sending-email.service";
 
 const mockHttpService = {
   get: jest.fn(),

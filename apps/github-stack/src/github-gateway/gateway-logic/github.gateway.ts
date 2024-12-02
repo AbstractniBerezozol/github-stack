@@ -19,8 +19,8 @@ export class EmailMessagingService {
   //   return this.clientGateway.send({ cmd: "checking" }, message).subscribe();
   // }
 
-  checkingRedis(pattern: Object, letter: any) {
-    console.log('redis-2')
-    return this.redisClient.send(pattern, letter).subscribe();
+  checkingRedis(pattern: any, letter: any) {
+    console.log("redis-2");
+    return this.redisClient.emit(pattern, letter).subscribe();
   }
 }

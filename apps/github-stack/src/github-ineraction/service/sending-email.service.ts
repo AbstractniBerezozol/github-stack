@@ -102,7 +102,7 @@ export class SendingEmailService {
 
   async sendMessageThroughRedis() {
     const letter = "Hello, I am Bob";
-    const pattern = { cmd: "send-redis-message" };
+    const pattern = "send-redis-message";
     console.log("redis-1");
     await this.emailMessagingService.checkingRedis(pattern, letter);
   }

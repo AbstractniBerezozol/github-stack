@@ -1,13 +1,11 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
+import { customAlphabet } from "nanoid";
+import { SendingEmailService } from "../../github-ineraction/service/sending-email.service";
+import { CreateUserDto } from "../../users/domain/dto/create-user.dto";
 import { UsersService } from "../../users/service/users.service";
 import { AuthPayloadDto } from "../domain/dto/auth.dto";
-import { CreateUserDto } from "../../users/domain/dto/create-user.dto";
-import { SendingEmailService } from "../../github-ineraction/service/sending-email.service";
-import { nanoid } from "nanoid";
-import { UpdateUserDto } from "../../users/domain/dto/update-user.dto";
-import { customAlphabet } from "nanoid";
 
 @Injectable()
 export class AuthService {
