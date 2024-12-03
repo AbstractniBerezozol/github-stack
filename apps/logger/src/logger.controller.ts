@@ -8,3 +8,4 @@ export class LoggerController {
     console.log(payload);
   }
 }
+

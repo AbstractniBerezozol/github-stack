@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { describe, beforeEach, it } from "node:test";
-import { LoggerController } from "./logger2.controller";
-import { LoggerService } from "./logger2.service";
+import { LoggerController } from "./logger.controller";
+import { LoggerService } from "./logger.service";
 describe("LoggerController", () => {
   let logger2Controller: LoggerController;
 

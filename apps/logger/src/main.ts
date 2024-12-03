@@ -1,19 +1,20 @@
 import { NestFactory } from "@nestjs/core";
-import { Transport } from "@nestjs/microservices";
-import { LoggerModule } from "./logger2.module";
-import { LoggerService } from "./logger2.service";
-
-
+import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { LoggerModule } from "./logger.module";
+import { LoggerService } from "./logger.service";
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(LoggerModule, {
+  const app = await NestFactory.create(LoggerModule);
+  
+  const redisMicroservice = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: { host: "redis", port: 6379 },
   });
-console.log('Logger in the process')
+  console.log("Logger in the process");
   const logger = new LoggerService("logger");
-  app.useLogger(logger);
+  await app.startAllMicroservices();
 
+  app.useLogger(logger);
   logger.log("Logger is working", "Bootstrap");
 }
 

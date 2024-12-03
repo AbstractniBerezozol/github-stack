@@ -46,13 +46,13 @@
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
       }
     },
-    "logger2": {
+    "logger": {
       "type": "application",
-      "root": "apps/logger2",
+      "root": "apps/logger",
       "entryFile": "main",
-      "sourceRoot": "apps/logger2/src",
+      "sourceRoot": "apps/logger/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/logger2/tsconfig.app.json"
+        "tsConfigPath": "apps/logger/tsconfig.app.json"
       }
     }
   }

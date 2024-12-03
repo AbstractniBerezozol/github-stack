@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
-import { LoggerModule } from "./../src/logger2.module";
+import { LoggerModule } from "../src/logger.module";
 import { beforeEach, describe, it } from "node:test";
 
 describe("LoggerController (e2e)", () => {

@@ -1,9 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { ConsoleLogger, Injectable } from "@nestjs/common";
 import * as winston from "winston";
 import "winston-daily-rotate-file";
 
 @Injectable()
-export class LoggerService extends Logger {
+export class LoggerService extends ConsoleLogger {
   private readonly logger: winston.Logger;
 
   constructor(context: string) {
