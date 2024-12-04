@@ -59,11 +59,12 @@ export class LoggerService extends ConsoleLogger {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDay() + 1).padStart(2, "0");
+
     console.log(`logs/logger/info/${year}-${month}-${day}.log`);
     try {
       await this.fs.appendFile(
         `logs/logger/info/${year}-${month}-${day}.log`,
-        payload
+        `\n ${payload}`
       );
     } catch (err) {
       console.error(err);
