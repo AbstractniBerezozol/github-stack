@@ -5,6 +5,7 @@ import "winston-daily-rotate-file";
 @Injectable()
 export class LoggerService extends ConsoleLogger {
   private readonly logger: winston.Logger;
+  fs = require("node:fs/promises");
 
   constructor(context: string) {
     super(context);
@@ -41,8 +42,6 @@ export class LoggerService extends ConsoleLogger {
     });
   }
 
-  
-
   log(message: string, context?: string) {
     this.logger.info(message, { context });
   }
@@ -53,5 +52,21 @@ export class LoggerService extends ConsoleLogger {
 
   debug(message: string, context?: string) {
     this.logger.debug(message, { context });
+  }
+
+  async storeLogsIntoTheFile(payload: any) {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDay() + 1).padStart(2, "0");
+    console.log(`logs/logger/info/${year}-${month}-${day}.log`);
+    try {
+      await this.fs.appendFile(
+        `logs/logger/info/${year}-${month}-${day}.log`,
+        payload
+      );
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
