@@ -1,10 +1,12 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable, Logger } from "@nestjs/common";
-import { EmailData } from "../domain/interface/email.interface";
-import { lastValueFrom } from "rxjs";
 import { InjectRepository } from "@nestjs/typeorm";
+import { lastValueFrom } from "rxjs";
 import { Repository } from "typeorm";
+import { EmailMessagingService } from "../../github-gateway/gateway-logic/github.gateway";
 import { User } from "../../users/domain/entity/user.entity";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { EmailData } from "../domain/interface/email.interface";
 
 @Injectable()
 export class SendingEmailService {
@@ -15,14 +17,17 @@ export class SendingEmailService {
 
   constructor(
     private readonly httpService: HttpService,
+    private readonly emailMessagingService: EmailMessagingService,
     @InjectRepository(User)
-    private readonly userRep: Repository<User>
+    private readonly userRep: Repository<User>,
+    @InjectRepository(GitRepository)
+    private readonly gitRep: Repository<GitRepository>
   ) {}
 
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  async sendingEmail(data: EmailData): Promise<string> {
+  async sendEmail(data: EmailData): Promise<string> {
     try {
       const url = "http://localhost:3001/sendingTestingEmail/messageRequest";
       const response = this.httpService.post(url, data);
@@ -35,9 +40,11 @@ export class SendingEmailService {
 
   async sendEmailWithBackoff(email: EmailData): Promise<EmailData> {
     let attempts = 0;
+    const pattern = { cmd: "send-email" };
+
     while (attempts <= this.maxAttempts) {
       try {
-        await this.sendingEmail(email);
+        this.emailMessagingService.handleMessage(pattern, email);
         this.logger.log("Email sent");
         return;
       } catch (error) {
@@ -58,18 +65,29 @@ export class SendingEmailService {
     }
   }
   async sendMonthSummary(user: User) {
-    const summary = user.repositories
-      .map((repo) => `- ${repo.name}`)
-      .join("\n");
+    const repositoriesSummary = [];
+    for (const repo of user.repositories) {
+      const repoSummary = `${repo.name}`;
+      const releaseSummary = repo.releases
+        .map(
+          (release) =>
+            `This release is ${release.release}, released on ${release.release_date}`
+        )
+        .join("\n");
+
+      const summary = repoSummary + releaseSummary;
+      repositoriesSummary.push(summary);
+    }
+
     const subject = "Here is your month summary";
-    const text = `Hello, please, here is your monthly summary activity:\n\n${summary}`;
+    const text = `Hello, please, here is your monthly summary activity:\n\n${repositoriesSummary}`;
     const letter = {
       from: "aleksandr.zolotarev@abstract.rs",
       to: user.email,
       subject: subject,
       text: text,
     };
-    await this.sendingEmail(letter);
+    await this.sendEmailWithBackoff(letter);
   }
 
   async sendNewPassword(email: string, password: string) {
@@ -79,6 +97,13 @@ export class SendingEmailService {
       subject: "New Password",
       text: `Greetings! Here is your new password: ${password}`,
     };
-    await this.sendingEmail(letter);
+    await this.sendEmailWithBackoff(letter);
+  }
+
+  async sendMessageThroughRedis() {
+    const letter = "Hello, I am Bob";
+    const pattern = "send-redis-message";
+    console.log("redis-1");
+    await this.emailMessagingService.checkingRedis(pattern, letter);
   }
 }

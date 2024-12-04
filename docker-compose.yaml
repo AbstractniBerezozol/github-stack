@@ -9,13 +9,13 @@ services:
   email:
     container_name: email
     build:
-     dockerfile: dockerfile-email
+      dockerfile: dockerfile-email
     ports:
       - "3001:3001"
     depends_on:
-      postgres: 
+      postgres:
         condition: service_healthy
-    links: 
+    links:
       - postgres
     volumes:
       - .:/usr/src/app
@@ -34,6 +34,56 @@ services:
       - /usr/src/app/node_modules
     networks:
       - fullstack
+
+  gateway:
+    container_name: gateway
+    build:
+      dockerfile: dockerfile-gateway
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - fullstack
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+    networks:
+      - fullstack
+
+  redis-commander:
+    depends_on:
+      - redis
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379 # note: this has to be the port the redis container exposes.
+    ports:
+      - "8081:8081"
+    networks:
+      - fullstack
+
+  logger:
+    container_name: logger
+    build:
+      dockerfile: dockerfile-logger
+    ports:
+      - "3003:3003"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - fullstack
+
   postgres:
     image: postgres
     container_name: postgres

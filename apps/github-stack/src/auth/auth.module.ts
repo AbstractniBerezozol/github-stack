@@ -14,6 +14,7 @@ import { HttpModule } from "@nestjs/axios";
 import { GitRepository } from "../github-ineraction/domain/entity/repository.entity";
 import { UsersModule } from "../users/users.module";
 import { LocalStrategy } from "./strategies/local.strategy";
+import { GithubInteractionModule } from "../github-ineraction/github-interaction.module";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { LocalStrategy } from "./strategies/local.strategy";
     UsersModule,
     TypeOrmModule.forFeature([User, GitRepository]),
     HttpModule,
+    GithubInteractionModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -36,7 +38,6 @@ import { LocalStrategy } from "./strategies/local.strategy";
     JwtStrategy,
     UsersService,
     JwtRefreshStrategy,
-    SendingEmailService,
     LocalStrategy,
   ],
 })

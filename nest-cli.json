@@ -27,6 +27,33 @@
       "compilerOptions": {
         "tsConfigPath": "apps/email/tsconfig.app.json"
       }
+    },
+    "email-app": {
+      "type": "application",
+      "root": "apps/email-app",
+      "entryFile": "main",
+      "sourceRoot": "apps/email-app/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/email-app/tsconfig.app.json"
+      }
+    },
+    "gateway": {
+      "type": "application",
+      "root": "apps/gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/gateway/tsconfig.app.json"
+      }
+    },
+    "logger": {
+      "type": "application",
+      "root": "apps/logger",
+      "entryFile": "main",
+      "sourceRoot": "apps/logger/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/logger/tsconfig.app.json"
+      }
     }
   }
 }

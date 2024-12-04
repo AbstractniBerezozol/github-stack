@@ -1,15 +1,16 @@
-import { Module } from "@nestjs/common";
-import { UsersModule } from "./users/users.module";
-import { AuthModule } from "./auth/auth.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule, ConfigService } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
-import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
-
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AuthModule } from "./auth/auth.module";
+import { GithubGatewayModule } from "./github-gateway/github-gateway.module";
+import { GithubInteractionModule } from "./github-ineraction/github-interaction.module";
+import { UsersModule } from "./users/users.module";
 @Module({
   imports: [
     GithubInteractionModule,
+    GithubGatewayModule,
     UsersModule,
     AuthModule,
     TypeOrmModule.forRootAsync({
@@ -32,5 +33,6 @@ import { ScheduleModule } from "@nestjs/schedule";
   ],
   controllers: [],
   providers: [],
+  exports: [],
 })
-export class AppModule {}
+export class GithubAppModule {}

@@ -1,15 +1,17 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-import { Repository } from "typeorm";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { User } from "../../users/domain/entity/user.entity";
-import { GitRepository } from "../domain/entity/repository.entity";
-import { GithubIneractionService } from "../service/github-ineraction.service";
-import { SearchBy } from "../domain/enum/repository.enum";
 import { HttpException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
 import { of } from "rxjs";
+import { Repository } from "typeorm";
+import { User } from "../../users/domain/entity/user.entity";
 import { UserRole } from "../../users/domain/enum/roles.enum";
+import { Release } from "../domain/entity/release.entity";
+import { GitRepository } from "../domain/entity/repository.entity";
+import { SearchBy } from "../domain/enum/repository.enum";
+import { GithubIneractionService } from "../service/github-ineraction.service";
+import { GitrepositoryService } from "../service/gitrepository.service";
 
 const mockHttpService = {
   get: jest.fn(),
@@ -38,12 +40,24 @@ const mockRepository = {
   createQueryBuilder: jest.fn(),
 };
 
+const mockGitServ = {
+  watchlistQueryExample: jest.fn(),
+  checkForSameRepositories: jest.fn(),
+};
+
+const mockReleaseRepository = {
+  create: jest.fn(),
+  save: jest.fn(),
+};
+
 describe("GithubIneractionService", () => {
   let githubInteractionService: GithubIneractionService;
   let httpService: HttpService;
   let configService: ConfigService;
   let userRepostory: Repository<User>;
   let gitRepository: Repository<GitRepository>;
+  let gitServ: GitrepositoryService;
+  let releaseRep: Repository<Release>;
 
   beforeEach(async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -57,6 +71,11 @@ describe("GithubIneractionService", () => {
           provide: getRepositoryToken(GitRepository),
           useValue: mockRepository,
         },
+        { provide: GitrepositoryService, useValue: mockGitServ },
+        {
+          provide: getRepositoryToken(Release),
+          useValue: mockReleaseRepository,
+        },
       ],
     }).compile();
 
@@ -69,6 +88,8 @@ describe("GithubIneractionService", () => {
     gitRepository = module.get<Repository<GitRepository>>(
       getRepositoryToken(GitRepository)
     );
+    gitServ = module.get<GitrepositoryService>(GitrepositoryService);
+    releaseRep = module.get<Repository<Release>>(getRepositoryToken(Release));
   });
 
   afterEach(() => {
@@ -152,6 +173,8 @@ describe("GithubIneractionService", () => {
         mockUser
       );
       expect(result.length).toBeGreaterThan(0);
+      expect(gitServ.checkForSameRepositories).toHaveBeenCalled();
+      expect(mockRepository.create).toHaveBeenCalled();
       expect(mockRepository.save).toHaveBeenCalled();
     });
     it("should handle errors during repos adding", async () => {
@@ -201,11 +224,14 @@ describe("GithubIneractionService", () => {
         stargazers_count: 0,
         watchers_count: 0,
         forks_count: 0,
-        latestRelease: "",
+        releases: [],
       };
       mockRepository.findOne.mockResolvedValue(mockRepositoryDelete);
 
       await githubInteractionService.deleteRepository(mockRepoId);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { repoId: mockRepoId },
+      });
       expect(mockRepository.remove).toHaveBeenCalled();
     });
     it("should throw an erroe if repository is not found", async () => {
@@ -218,8 +244,8 @@ describe("GithubIneractionService", () => {
     });
   });
 
-  describe("getWatchliist", () => {
-    it("should return user watchlist", async () => {
+  describe("getWatchlist", () => {
+    it("should return the watchlist", async () => {
       const mockedRepository: GitRepository = {
         id: 1,
         name: "mockingRepository",
@@ -230,44 +256,29 @@ describe("GithubIneractionService", () => {
         stargazers_count: 103,
         watchers_count: 6,
         forks_count: 10509,
-        latestRelease: "v1.7.19",
         repoId: 23,
         user: new User(),
+        releases: [new Release()],
       };
+
       const mockUser = {
         id: 1,
         username: "Coco",
         password: "Coco123",
         email: "Coco@singimail.rs",
-        role: UserRole.USER,
-        repositories: [],
-      } as User;
-
-      const queryBuilder: any = {
-        innerJoin: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue(mockedRepository),
-      };
+        roles: UserRole.USER,
+        repositories: [mockedRepository],
+      } as unknown as User;
 
       jest
-        .spyOn(gitRepository, "createQueryBuilder")
-        .mockReturnValue(queryBuilder);
+        .spyOn(gitServ, "watchlistQueryExample")
+        .mockResolvedValue(mockUser.repositories);
 
       const result = await githubInteractionService.getWatchlist(mockUser);
 
-      expect(gitRepository.createQueryBuilder).toHaveBeenCalledWith(
-        "git_repository"
-      );
-      expect(queryBuilder.innerJoin).toHaveBeenCalledWith(
-        "git_repository.user",
-        "user"
-      );
-      expect(queryBuilder.where).toHaveBeenCalledWith(
-        "user.username= :username",
-        { username: mockUser.username }
-      );
-      expect(queryBuilder.getMany).toHaveBeenCalled();
-      expect(result).toEqual(mockedRepository);
+      expect(gitServ.watchlistQueryExample).toHaveBeenCalledWith(mockUser);
+
+      expect(result).toEqual(mockUser.repositories);
     });
   });
 });
