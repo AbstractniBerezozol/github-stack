@@ -1,0 +1,18 @@
+
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T07:41:04.510Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:37:03.839Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:38:20.042Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:38:30.063Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:38:50.039Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:39:00.038Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:39:10.028Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:40:00.085Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:50:00.098Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:52:50.070Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T19:53:00.063Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T20:00:00.091Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-05T20:10:00.049Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-12T01:44:33.588Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-12T15:58:05.115Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-12T18:26:30.985Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-19T19:05:47.537Z"}

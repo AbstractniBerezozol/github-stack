@@ -5,3 +5,6 @@
  {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-04T15:50:00.076Z"}
  {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-04T16:00:00.038Z"}
  {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-04T16:10:00.092Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-11T07:00:33.440Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-18T01:11:40.294Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-18T23:10:07.261Z"}

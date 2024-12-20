@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException
-} from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcryptjs";
 import { Repository } from "typeorm";
@@ -50,6 +47,18 @@ export class UsersService {
       throw new NotFoundException();
     }
     return user;
+  }
+
+  async createDefaultAdmin() {
+    const userCount = await this.userRepository.count();
+    if (userCount === 0) {
+      this.create({
+        username: "admin1",
+        email: "admin@123.com",
+        password: "Admin123",
+        role: UserRole.ADMIN,
+      });
+    }
   }
 
   async userWithNoPassword(username: string) {

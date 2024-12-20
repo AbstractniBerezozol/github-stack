@@ -47,7 +47,7 @@ export class AppService {
         timestamp: new Date().toISOString(),
       });
       console.log(newLetterToRedis);
-      this.redisClient.emit("email-log", newLetterToRedis);
+      this.redisClient.emit("email-log", newLetterToRedis).subscribe();
       return;
     } catch (err) {
       console.log("New error", err);

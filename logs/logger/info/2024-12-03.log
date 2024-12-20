@@ -19,3 +19,11 @@ info: Logger is working {"context":"Bootstrap","timestamp":"2024-12-03T10:27:07.
 info: Logger is working {"context":"Bootstrap","timestamp":"2024-12-03T10:28:21.877Z"}
 info: Logger is working {"context":"Bootstrap","timestamp":"2024-12-03T10:28:50.671Z"}
 info: Logger is working {"context":"Bootstrap","timestamp":"2024-12-03T10:28:51.849Z"}
+
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-10T06:08:39.770Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-10T06:26:59.424Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-10T07:01:36.831Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-10T07:26:17.358Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-10T08:01:55.734Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-10T12:01:51.450Z"}
+ {"event":"email_sent","details":{"payload":"Hello, I am Bob"},"timestamp":"2024-12-17T11:32:53.254Z"}

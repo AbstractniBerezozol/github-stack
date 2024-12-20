@@ -23,4 +23,5 @@ export class GatewayController {
   //   const pattern = { cmd: "checking" };
   //   this.gatewayService.mockSending()
   // }
+  
 }
